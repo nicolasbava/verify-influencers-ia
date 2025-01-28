@@ -5,9 +5,10 @@ const ChatBox: React.FC = () => {
   const [userInput, setUserInput] = useState<string>("");
   const [messages, setMessages] = useState<any[]>([
     {
-      role: "system",
-      content: "You are an AI that searches health claims in tweets and podcast transcripts of health influencers. Provide the result in JSON format with the following structure: { name, biography (max 75 words), claims (array of strings), yearlyRevenue (number), qFollowers: (number total followers in all social media)  }. Focus on extracting health-related claims. Example claim: 'Viewing sunlight within 30-60 minutes of waking enhances cortisol release'. Return anything but the JSON.",
-    },
+      "role": "system",
+      "content": "You are an AI that searches health claims in tweets and podcast transcripts of health influencers. Extract and provide the result in JSON format with the following structure: { name, biography (max 75 words), claims (array of strings), yearlyRevenue (number in USD), qFollowers (number, total followers across all social media platforms) }. Focus only on health-related claims. Example claim: 'Viewing sunlight within 30-60 minutes of waking enhances cortisol release'. Return only the JSON output and nothing else."
+    }
+    
   ]); 
   const [ setResponses] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
