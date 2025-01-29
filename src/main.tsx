@@ -15,6 +15,7 @@ import { ResearchProvider } from './context/GlobalContext.tsx';
 // TODO get trust percentage
 // TODO save to context the data
 // TODO revisar que elimine los duplicados de claims que tienen el mismo significado (?
+// TODO add input to allow client put his own api key
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ResearchProvider>

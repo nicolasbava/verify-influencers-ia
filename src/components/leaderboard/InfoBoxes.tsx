@@ -1,37 +1,22 @@
-import { Box, Button, Grid2, styled, Typography } from "@mui/material";
+import { Box, Grid2, styled, Typography } from "@mui/material";
 import { StyledBox } from "../styled";
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import TaskAltOutlinedIcon from '@mui/icons-material/TaskAltOutlined';
+import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 
 const NumberBold = styled(Typography)({
     fontWeight: 'bold',
     fontSize: '28px'
 });
 
-const BORDER_BOX = '#41c79a6b';
-const BORDER_BOX_INACTIVE = '#80808042';
-
-const ButtonGreen = styled(Button)(() => ({
-    padding: '4px 12px',
-    textTransform: 'capitalize',
-    borderRadius: '25px',
-    background: '#0ea06f',
-    color: 'white'
-}));
-
-
 const InfoBoxes = () => {
     return (
         <Box mb={4}>
-            <Box sx={{display: 'flex', alignItems: 'center', mb: 3, justifyContent: 'space-between'}}>
-                <Box sx={{display: 'flex', alignItems: 'center', }}>
-                    <ButtonGreen>All categories</ButtonGreen>
-
-                </Box>
-                <Button variant='contained' sx={{color: 'white'}}>Highest first</Button>
-            </Box>
-            <Grid2 container>
+            
+            <Grid2 container spacing={3}>
                 <Grid2 size={4}>
                     <StyledBox sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                        <Typography>icon</Typography>
+                        <PeopleAltOutlinedIcon />
                         
                         <Box>
                             <NumberBold>1,234</NumberBold>
@@ -41,7 +26,7 @@ const InfoBoxes = () => {
                 </Grid2>
                 <Grid2 size={4}>
                     <StyledBox sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                        <Typography>icon</Typography>
+                        <TaskAltOutlinedIcon />
                         
                         <Box>
                             <NumberBold>24,234</NumberBold>
@@ -51,7 +36,7 @@ const InfoBoxes = () => {
                 </Grid2>
                 <Grid2 size={4}>
                     <StyledBox sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                        <Typography>icon</Typography>
+                        <BarChartOutlinedIcon />
                         
                         <Box>
                             <NumberBold>86,3%</NumberBold>
@@ -60,6 +45,7 @@ const InfoBoxes = () => {
                     </StyledBox>
                 </Grid2>
             </Grid2>
+
         </Box>
     )
 };

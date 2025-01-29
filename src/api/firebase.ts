@@ -2,14 +2,14 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDYKuUJTD75ej_qzpyYDiyz64PuB8436oA",
-    authDomain: "verify-influencers-ia.firebaseapp.com",
-    databaseURL: "https://verify-influencers-ia-default-rtdb.firebaseio.com",
-    projectId: "verify-influencers-ia",
-    storageBucket: "verify-influencers-ia.firebasestorage.app",
-    messagingSenderId: "644992018096",
-    appId: "1:644992018096:web:713b50dc45eb326bab3d75",
-    measurementId: "G-GLB3C7F90G"
+    apiKey: import.meta.env.VITE_API_KEY_FIREBASE,
+    authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+    databaseURL: import.meta.env.VITE_DATABASE_URL,
+    projectId: import.meta.env.VITE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_APP_ID,
+    measurementId: import.meta.env.VITE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);

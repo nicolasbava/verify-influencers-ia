@@ -3,8 +3,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { ChatCompletionResponse, HealthInfluencer, HealthInfluencerVerified, Journal, Message } from "../interfaces/Research";
 
-const API_KEY = "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";
-const BASE_URL = "https://api.perplexity.ai/chat/completions";
+
 const generateId = () => crypto.randomUUID();
 
 

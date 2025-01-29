@@ -2,13 +2,90 @@ import { Box, Typography } from "@mui/material";
 import InfoBoxes from "./InfoBoxes";
 import BasicTable from "./Table";
 
+export interface Influencer {
+    rank: number;
+    name: string;
+    category: string;
+    trustScore: string;
+    trend: string;
+    followers: string;
+    verifiedClaims: number;
+}
+
+// Example usage
+const influencers: Influencer[] = [
+    {
+        rank: 1,
+        name: "Dr. Peter Atila",
+        category: "Medicine",
+        trustScore: "94%",
+        trend: "~*",
+        followers: "1.2M+",
+        verifiedClaims: 203
+    },
+    {
+        rank: 2,
+        name: "Dr. Rhonda Patrick",
+        category: "Nutrition",
+        trustScore: "91%",
+        trend: "~*",
+        followers: "980K+",
+        verifiedClaims: 156
+    },
+    {
+        rank: 3,
+        name: "Dr. Chris Palmer",
+        category: "Mental_health",
+        trustScore: "90%",
+        trend: "~*",
+        followers: "180K+",
+        verifiedClaims: 76
+    },
+    {
+        rank: 4,
+        name: "Andrew Huberman",
+        category: "Neuroscience",
+        trustScore: "89%",
+        trend: "~*",
+        followers: "4.2M+",
+        verifiedClaims: 127
+    },
+    {
+        rank: 5,
+        name: "Dr. Dominic D'Agostino",
+        category: "Nutrition",
+        trustScore: "89%",
+        trend: "~*",
+        followers: "290K+",
+        verifiedClaims: 112
+    },
+    {
+        rank: 6,
+        name: "Dr. Gabrielle Lyon",
+        category: "Medicine",
+        trustScore: "88%",
+        trend: "~*",
+        followers: "380K+",
+        verifiedClaims: 84
+    },
+    {
+        rank: 7,
+        name: "Dr. David Sinclair",
+        category: "Longevity",
+        trustScore: "87%",
+        trend: "~*",
+        followers: "1.1M+",
+        verifiedClaims: 145
+    }
+];
+
 const LeaderBoardComponent = () => {
     return (
         <Box mb={2}>
             <Typography mb={2} sx={{fontWeight: 'bold', fontSize: '39px'}}>Influencer Trust Leaderboard</Typography>
             <Typography mb={4} variant="body1" sx={{color: '#f9f9f98f', maxWidth: {xs: '100%', md: '60%'}}}>Real-time rankings of health influencers based on scientific accuracy, credibility, and transparency. Updated daily using AI-powered analysis.</Typography>
             <InfoBoxes />
-            <BasicTable />
+            <BasicTable data={influencers} />
         </Box>
     )
 };
