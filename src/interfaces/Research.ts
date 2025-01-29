@@ -1,0 +1,36 @@
+export interface Message {
+    role: 'user' | 'assistant' | 'system',
+    content: string
+}
+
+export interface Journal {
+    name: string,
+    selected: boolean
+}
+
+export type Claim = {
+    id: string,
+    text: string,
+    trustScore: number,
+    status: string
+    verifyLinkReference: string,
+    category: string
+}
+
+export interface HealthInfluencer { 
+    name: string,
+    id: string,
+    claims: string[],
+    biography: string,
+    qFollowers?: number
+    yearlyRevenue?: number
+}
+
+export interface HealthInfluencerVerified { 
+    name: string,
+    id: string,
+    claims: Claim[],
+    biography: string,
+    qFollowers?: number
+    yearlyRevenue?: number
+}

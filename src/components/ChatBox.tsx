@@ -10,7 +10,7 @@ const ChatBox: React.FC = () => {
     }
     
   ]); 
-  const [ setResponses] = useState<string[]>([]);
+  const [ setResponses] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSend = async () => {
@@ -30,6 +30,7 @@ const ChatBox: React.FC = () => {
         ...prev,
         { role: "assistant", content: result.choices[0].message.content },
       ]);
+
     } catch (error) {
       console.error("Error:", error);
     } finally {

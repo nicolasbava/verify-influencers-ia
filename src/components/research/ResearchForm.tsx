@@ -1,14 +1,24 @@
-import { Box, Button, FormControlLabel, Grid2, Switch, TextField, Typography } from "@mui/material";
+import { Box, Button, FormControlLabel, Grid2, Modal, TextField, Typography } from "@mui/material";
 import theme from "../../theme";
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { styled } from "@mui/system";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IOSSwitch } from "../../utils/iosSwitch";
-import { fetchDataFromIA } from "../../api/perplexityApi";
+import { executeResearchAndVerify, fetchDataFromIA } from "../../api/perplexityApi";
+import { Message } from "../../interfaces/Research";
 
 const BORDER_BOX = '#41c79a6b';
 const BORDER_BOX_GREY = '#80808070';
 const BORDER_BOX_INACTIVE = '#80808042';
+
+const CustomTextField = styled(TextField)({
+    '& .MuiOutlinedInput-root': {
+      backgroundColor: '#101827', // Fondo
+      border: '1px solid #80808078', // Borde
+      borderRadius: '9px',
+      color: 'white' // Bordes redondeados
+    },
+  });
 
 const StyledButton = styled(Button)<{ active?: boolean }>(({ theme, active }) => ({
     backgroundColor: active ? theme.palette.secondary.dark : theme.palette.primary.dark,
@@ -17,17 +27,14 @@ const StyledButton = styled(Button)<{ active?: boolean }>(({ theme, active }) =>
     padding: '4px 8px',
     borderRadius: '8px',
     textAlign: "center",
-    // marginRight: 8,
     cursor: 'pointer',
     textTransform: 'capitalize',
     width: '-webkit-fill-available',
 }));
 
-
 const StyledBox = styled(Box)<{ active?: boolean }>(({ theme, active }) => ({
     backgroundColor: active ? theme.palette.primary.dark : theme.palette.secondary.dark,
     border: active ? `1px solid ${BORDER_BOX_GREY}` :`1px solid ${BORDER_BOX}`,
-    // color: active ? theme.palette.primary.contrastText : theme.palette.secondary.main,
     padding: theme.spacing(2),
     borderRadius: theme.spacing(2),
     textAlign: "center",
@@ -46,10 +53,10 @@ enum TimeRange {
 
 const generateSystemMessage = (includeRevenueAnalysis: boolean, timeRange: TimeRange): string => {
     const basePrompt =
-        "You are an AI that searches health claims in tweets and podcast transcripts of health influencers. Provide the result in JSON format with the following structure: { name, biography (max 75 words), claims (array of strings), qFollowers: (number total followers in all social media, optional)";
+        "You are an AI that searches health claims in tweets and podcast transcripts of health influencers. Provide the result in JSON format with the following structure: { name, biography (max 75 words), claims (array of strings), qFollowers: (number total followers in all social media)";
 
     const revenuePrompt = includeRevenueAnalysis
-        ? ", yearlyRevenue: (number in USD, optional)"
+        ? ", yearlyRevenue: (number in USD)"
         : "";
 
     const timeRangePrompt =
@@ -71,8 +78,10 @@ const generateSystemMessage = (includeRevenueAnalysis: boolean, timeRange: TimeR
 const ResearchForm = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [userInput, setUserInput] = useState<string>("");
+    const [newJournal, setNewJournal] = useState<string>("");
     const [responses, setResponses] = useState([]);
     const [qProducts, setQProducts] = useState<number>(15);
+    const [notesSearch, setNotesSearch] = useState<string>('')
     const [messages, setMessages] = useState([
         {
             role: "system",
@@ -80,34 +89,66 @@ const ResearchForm = () => {
         },
     ]); 
     const [newResearch, setNewResearch] = useState<boolean>(false);
-    const [includeRevenueAnalysis, setIncludeRevenueAnalisys] = useState<boolean>(false);
+    const [includeRevenueAnalysis, setIncludeRevenueAnalysis] = useState<boolean>(true);
     const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.LAST_WEEK);
+    const [open, setOpen] = useState<boolean>(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     
     const [journals, setJournals] = useState([
         {name: 'PubMed Central', selected: true}, 
-        {name: 'Nature', selected: true}, 
-        {name: 'Science', selected: true}, 
+        {name: 'Nature', selected: false}, 
+        {name: 'Science', selected: false}, 
         {name: 'Cell', selected: true}
     ])
+
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        color: 'white',
+        bgcolor: 'primary.light',
+        border: '1px solid grey',
+        borderRadius: '15px',
+        boxShadow: 24,
+        p: 4,
+    };
+
+      
+    const addNewJournal = (journal: string) => {
+        const newJournal = {
+            name: journal,
+            selected: true
+        };
+
+        setJournals(prevJournals => [...prevJournals, newJournal]);
+        setNewJournal('');
+        handleClose();
+    };
 
         
     const handleSend = async () => {
         if (!userInput.trim()) return;
 
-        const updatedMessages = [
-            ...messages,
-            { role: "user", content: userInput },
+        const payload : Message[] = [
+            { role: "system", content: generateSystemMessage(includeRevenueAnalysis, timeRange)},
+            { role: "user", content: `Search for claims of ${userInput}` },
         ];
-        setMessages(updatedMessages);
+        setMessages(payload);
         setLoading(true);
 
+        console.log('payload', payload)
+
         try {
-            const result = await fetchDataFromIA(updatedMessages);
-            setResponses((prev) => [...prev, result.choices[0].message.content]);
-            setMessages((prev) => [
-                ...prev,
-                { role: "assistant", content: result.choices[0].message.content },
-            ]);
+            const result = await executeResearchAndVerify(payload, journals);
+            // setResponses((prev) => [...prev, result.choices[0].message.content]);
+            // setMessages((prev) => [
+            //     ...prev,
+            //     { role: "assistant", content: result.choices[0].message.content },
+            // ]);
+            console.log('RESULT', result);
         } catch (error) {
             console.error("Error:", error);
         } finally {
@@ -117,17 +158,16 @@ const ResearchForm = () => {
     };
     
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setIncludeRevenueAnalisys(event.target.checked);
+        setIncludeRevenueAnalysis(event.target.checked);
     };
 
-    useEffect(() => {
-        const newMessage = {
-            role: "system",
-            content: generateSystemMessage(includeRevenueAnalysis, timeRange),
-        };
-
-        setMessages([newMessage]);
-    }, [includeRevenueAnalysis, timeRange]);
+    const toggleJournalSelection = (index: number) => {
+        setJournals((prevJournals) =>
+            prevJournals.map((journal, i) =>
+            i === index ? { ...journal, selected: !journal.selected } : journal
+            )
+        );
+    };
 
 
     return (
@@ -166,26 +206,27 @@ const ResearchForm = () => {
                             <Typography mb={1}>Time Range</Typography>
                             <Grid2 container spacing={1}>
                                 <Grid2 size={6}>
-                                    <StyledButton active={timeRange === TimeRange.LAST_WEEK}  onClick={() => setTimeRange(TimeRange.LAST_WEEK)} >Last Week</StyledButton>
+                                    <StyledButton active={timeRange === TimeRange.LAST_WEEK} onClick={() => setTimeRange(TimeRange.LAST_WEEK)} >Last Week</StyledButton>
                                 </Grid2>
                                 <Grid2 size={6}>
-                                    <StyledButton active={timeRange === TimeRange.LAST_MONTH}   onClick={() => setTimeRange(TimeRange.LAST_MONTH)}>Last Month</StyledButton>
+                                    <StyledButton active={timeRange === TimeRange.LAST_MONTH} onClick={() => setTimeRange(TimeRange.LAST_MONTH)}>Last Month</StyledButton>
                                 </Grid2>
                                 <Grid2 size={6}>
-                                    <StyledButton active={timeRange === TimeRange.LAST_YEAR}   onClick={() => setTimeRange(TimeRange.LAST_YEAR)}>Last Year</StyledButton>
+                                    <StyledButton active={timeRange === TimeRange.LAST_YEAR} onClick={() => setTimeRange(TimeRange.LAST_YEAR)}>Last Year</StyledButton>
                                 </Grid2>
                                 <Grid2 size={6}>
-                                    <StyledButton active={timeRange === TimeRange.ALL_TIME}   onClick={() => setTimeRange(TimeRange.ALL_TIME)}>All Time</StyledButton>
+                                    <StyledButton active={timeRange === TimeRange.ALL_TIME} onClick={() => setTimeRange(TimeRange.ALL_TIME)}>All Time</StyledButton>
                                 </Grid2>
                             </Grid2>
                         </Box>
                         <Box mb={3}>
                             <Typography mb={1}>Influencer Name</Typography>
-                            <TextField 
+                            <CustomTextField 
                                 size={'small'} 
                                 id="outlined-basic" 
-                                label="Outlined" 
+                                placeholder="Search" 
                                 variant="outlined" 
+                                fullWidth
                                 onChange={(ele) => {
                                     setUserInput(ele.target.value)
                                 }} 
@@ -194,7 +235,7 @@ const ResearchForm = () => {
                         
                         <Box mb={2}>
                             <Typography mb={1}>Claims to analyze per influencer</Typography>
-                            <TextField size={'small'}  id="outlined-basic" label="Outlined" variant="outlined" /><br/>
+                            <CustomTextField size={'small'} fullWidth  id="outlined-basic" placeholder="Outlined" variant="outlined" /><br/>
                             <Typography variant="caption">Recommended: 50-100 claims for comprehensive analysis</Typography>
                         </Box>
 
@@ -204,7 +245,7 @@ const ResearchForm = () => {
                     <Grid2 size={6} mb={2}>
                         <Box mb={3}>
                             <Typography mb={1}>Products To Find Per Influencer</Typography>
-                            <TextField id="outlined-basic" label="Outlined" variant="outlined" size={'small'} /><br/>
+                            <CustomTextField fullWidth id="outlined-basic" label="Outlined" variant="outlined" size={'small'} /><br/>
                             <Typography variant="caption" mb={1}>Set up to 0 to skip product research</Typography>
                         </Box>
                         <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
@@ -240,25 +281,45 @@ const ResearchForm = () => {
                         </Box>
                     </Box>
                     <Grid2 container spacing={1} mb={2}>
-                        
-                            {journals.map( ele => {
-                                return (
-                                    <Grid2 size={6}>
-                                        <StyledButton>
-                                            { ele.name }
-                                        </StyledButton>
-                                    </Grid2>
-                                )
-                            }) }
-                        
+
+                        {journals.map((journal, index) => (
+                            <Grid2 key={journal.name} size={6}>
+                                <StyledButton
+                                    active={journal.selected}
+                                    onClick={() => toggleJournalSelection(index)}
+                                    fullWidth
+                                >
+                                    {journal.name}
+                                </StyledButton>
+                            </Grid2>
+                        ))}
+                    
                     </Grid2>
-                    <Button sx={{color: 'secondary.light', textTransform: 'capitalize'}}>+ Add New Journal</Button>
+                    <Button  onClick={handleOpen} sx={{color: 'secondary.light', textTransform: 'capitalize'}}>+ Add New Journal</Button>
+
+                    <Modal
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                        >
+                        <Box sx={style}>
+                            <Box sx={{display:'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+                                <Typography mb={1} id="modal-modal-title" variant="h6" component="h2" >
+                                    Add New Journal
+                                </Typography>
+                                <Typography sx={{fontWeight: 'bold', cursor: 'pointer'}} onClick={handleClose}>X</Typography>
+                            </Box>
+                            <CustomTextField onChange={(ele) => setNewJournal(ele.target.value)} size={'small'} fullWidth  id="outlined-basic" placeholder="Journal" variant="outlined" /><br/>
+                            <Button onClick={() => addNewJournal(newJournal)} sx={{mt:2 }}variant='contained'>Add Journal</Button>
+                        </Box>
+                    </Modal>
                 </Box>
 
                 <Box mb={3}>
                     <Typography>Notes for Research Assistant</Typography>
-                    <TextField
-                        label="Comments"
+                    <CustomTextField
+                        placeholder="Comments"
                         multiline
                         rows={5}
                         variant="outlined"
@@ -281,6 +342,8 @@ const ResearchForm = () => {
                     </Button>
                 </Box>
             </Box>
+
+            {JSON.stringify(messages)}
         </form>
     )
 }
