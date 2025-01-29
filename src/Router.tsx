@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 // import ChatBox from './components/ChatBox';
 import ResearchPage from './pages/Research';
 import LeaderboardPage from './pages/LeaderBoard';
