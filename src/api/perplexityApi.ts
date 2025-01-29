@@ -31,7 +31,7 @@ const saveInfo = async (data: HealthInfluencerVerified) => {
 
 // Promise<HealthInfluencerVerified>
 const verifyClaims = async (
-  research: HealthInfluencer,
+  research: HealthInfluencerVerified,
   journals: Journal[]
 ) : Promise<ChatCompletionResponse>  => {
   try {
@@ -147,7 +147,7 @@ const verifyClaims = async (
     console.log("Messages sent:", messages);
     // console.log("Response received:", response.data);
     console.log('response.data', response.data)
-    return response.data as HealthInfluencerVerified;
+    return response.data;
     // return messages
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
