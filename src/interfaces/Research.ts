@@ -17,13 +17,20 @@ export type Claim = {
     category: string
 }
 
+export interface ChatCompletionResponse {
+    choices: {
+      message: Message;
+    }[];
+  }
+
 export interface HealthInfluencer { 
     name: string,
     id: string,
     claims: string[],
     biography: string,
-    qFollowers?: number
-    yearlyRevenue?: number
+    qFollowers?: number,
+    yearlyRevenue?: number,
+    trustPercentage?: number
 }
 
 export interface HealthInfluencerVerified { 
@@ -33,4 +40,7 @@ export interface HealthInfluencerVerified {
     biography: string,
     qFollowers?: number
     yearlyRevenue?: number
+    totalTrustPercentage?: number,
+    categories?: string[]
+
 }

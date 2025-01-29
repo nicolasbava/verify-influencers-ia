@@ -5,14 +5,23 @@ import App from './App.tsx'
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./theme.ts";
+import { ResearchProvider } from './context/GlobalContext.tsx';
 
-
-
+// TODO put links of claim research and date of claim publish
+// TODO add categories to the health influencer for detail page 
+// TODO add total claims verified for info boxes 
+// TODO add filters to detail page
+// TODO color to percentage temperature
+// TODO get trust percentage
+// TODO save to context the data
+// TODO revisar que elimine los duplicados de claims que tienen el mismo significado (?
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-     <ThemeProvider theme={theme}>   
-      <CssBaseline />
-          <App />
-    </ThemeProvider>
+    <ResearchProvider>
+      <ThemeProvider theme={theme}>   
+        <CssBaseline />
+            <App />
+      </ThemeProvider>
+    </ResearchProvider>
   </StrictMode>,
 )

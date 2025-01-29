@@ -1,6 +1,11 @@
 import { Box, Button, Grid2, InputAdornment, styled, TextField, Typography } from "@mui/material";
 import ClaimDetail from "./ClaimDetail";
 import SearchIcon from "@mui/icons-material/Search";
+import { useResearchContext } from "../../../context/GlobalContext";
+import { useEffect, useState } from "react";
+import { HealthInfluencerVerified } from "../../../interfaces/Research";
+import { CustomTextField } from "../../styled";
+import theme from "../../../theme";
 
 const ButtonGreen = styled(Button)(() => ({
     padding: '4px 12px',
@@ -17,12 +22,20 @@ const ButtonGreenSquared = styled(Button)(() => ({
 }));
 
 const ClaimsTab = () => {
+    const { researchResponse } = useResearchContext();
+    const [influencerData, setInfluencerData] = useState<HealthInfluencerVerified | null>(null)
+
+    useEffect(() => {
+        if(researchResponse){
+            setInfluencerData(researchResponse)
+        }
+    }, [researchResponse])
 
     return (
         <Box>
-            <Box sx={{border: '2px solid white', padding: 4, borderRadius: '10px', background: 'secondary.light', mb: 4}}>
+            <Box sx={{border: '1px solid #ffffff33', padding: 4, borderRadius: '10px',  mb: 4, background: theme.palette.primary.light}}>
                 <Box mb={2}>
-                    <TextField
+                    <CustomTextField
                         variant="outlined"
                         placeholder="Search..."
                         fullWidth
@@ -66,8 +79,15 @@ const ClaimsTab = () => {
             </Box>
             <Box>
                 <Typography mb={2}>Showing 10 claims</Typography>
-                <ClaimDetail />
-                <ClaimDetail />
+                {
+                    influencerData?.claims && influencerData?.claims.length > 0 ? (
+                        influencerData?.claims.map(ele => (
+                                <ClaimDetail claim={ele} />
+                            )
+                        )
+                    ) : 'NO CLAIMS FOUND'
+                }
+                
             </Box>
         </Box>
     )

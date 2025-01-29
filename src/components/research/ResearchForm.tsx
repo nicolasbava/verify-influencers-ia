@@ -1,24 +1,28 @@
-import { Box, Button, FormControlLabel, Grid2, Modal, TextField, Typography } from "@mui/material";
+import { Box, Button, FormControlLabel, Grid2, Modal, Typography } from "@mui/material";
 import theme from "../../theme";
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { styled } from "@mui/system";
 import { useState } from "react";
 import { IOSSwitch } from "../../utils/iosSwitch";
-import { executeResearchAndVerify, fetchDataFromIA } from "../../api/perplexityApi";
-import { Message } from "../../interfaces/Research";
+import { executeResearchAndVerify } from "../../api/perplexityApi";
+import { HealthInfluencerVerified, Message } from "../../interfaces/Research";
+import { useResearchContext } from "../../context/GlobalContext";
+import { useNavigate } from "react-router-dom";
+import { CustomTextField } from "../styled";
+import { calculateTotalTrustScore, getUniqueCategories } from "../../utils";
 
 const BORDER_BOX = '#41c79a6b';
 const BORDER_BOX_GREY = '#80808070';
 const BORDER_BOX_INACTIVE = '#80808042';
 
-const CustomTextField = styled(TextField)({
-    '& .MuiOutlinedInput-root': {
-      backgroundColor: '#101827', // Fondo
-      border: '1px solid #80808078', // Borde
-      borderRadius: '9px',
-      color: 'white' // Bordes redondeados
-    },
-  });
+// const CustomTextField = styled(TextField)({
+//     '& .MuiOutlinedInput-root': {
+//       backgroundColor: '#101827', // Fondo
+//       border: '1px solid #80808078', // Borde
+//       borderRadius: '9px',
+//       color: 'white' // Bordes redondeados
+//     },
+//   });
 
 const StyledButton = styled(Button)<{ active?: boolean }>(({ theme, active }) => ({
     backgroundColor: active ? theme.palette.secondary.dark : theme.palette.primary.dark,
@@ -76,12 +80,13 @@ const generateSystemMessage = (includeRevenueAnalysis: boolean, timeRange: TimeR
 
 
 const ResearchForm = () => {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState<boolean>(false);
     const [userInput, setUserInput] = useState<string>("");
     const [newJournal, setNewJournal] = useState<string>("");
-    const [responses, setResponses] = useState([]);
-    const [qProducts, setQProducts] = useState<number>(15);
-    const [notesSearch, setNotesSearch] = useState<string>('')
+    // const [responses, setResponses] = useState([]);
+    // const [qProducts, setQProducts] = useState<number>(15);
+    // const [notesSearch, setNotesSearch] = useState<string>('')
     const [messages, setMessages] = useState([
         {
             role: "system",
@@ -94,6 +99,7 @@ const ResearchForm = () => {
     const [open, setOpen] = useState<boolean>(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const { setResearchResponse } = useResearchContext();
     
     const [journals, setJournals] = useState([
         {name: 'PubMed Central', selected: true}, 
@@ -122,7 +128,6 @@ const ResearchForm = () => {
             name: journal,
             selected: true
         };
-
         setJournals(prevJournals => [...prevJournals, newJournal]);
         setNewJournal('');
         handleClose();
@@ -139,7 +144,7 @@ const ResearchForm = () => {
         setMessages(payload);
         setLoading(true);
 
-        console.log('payload', payload)
+        // console.log('payload', payload)
 
         try {
             const result = await executeResearchAndVerify(payload, journals);
@@ -148,7 +153,14 @@ const ResearchForm = () => {
             //     ...prev,
             //     { role: "assistant", content: result.choices[0].message.content },
             // ]);
-            console.log('RESULT', result);
+            if(!result) throw new Error('problem with research result')
+            const calculateTotalResults : HealthInfluencerVerified = {
+                ...result,
+                totalTrustPercentage: calculateTotalTrustScore(result.claims),
+                categories: getUniqueCategories(result.claims)
+            }
+            console.log('calculateTotalResults', calculateTotalResults);
+            setResearchResponse(calculateTotalResults)
         } catch (error) {
             console.error("Error:", error);
         } finally {
@@ -175,7 +187,7 @@ const ResearchForm = () => {
             onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();
-                // redirect()
+                navigate('/detail')
             }}
         >
             <Box sx={{border: '1px solid #80808042', padding: '24px 24px', borderRadius: '8px', background: theme.palette.primary.light}}>

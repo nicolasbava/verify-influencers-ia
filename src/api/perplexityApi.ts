@@ -1,18 +1,14 @@
 import axios from "axios";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "./firebase";
-import { HealthInfluencer, HealthInfluencerVerified, Journal, Message } from "../interfaces/Research";
+import { ChatCompletionResponse, HealthInfluencer, HealthInfluencerVerified, Journal, Message } from "../interfaces/Research";
 
 const API_KEY = "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";
 const BASE_URL = "https://api.perplexity.ai/chat/completions";
 const generateId = () => crypto.randomUUID();
 
 
-// interface ChatCompletionResponse {
-//   choices: {
-//     message: Message;
-//   }[];
-// }
+
 
 const transformClaims = (data : HealthInfluencer) : HealthInfluencerVerified => {
   return {
@@ -41,18 +37,24 @@ const saveInfo = async (data: HealthInfluencerVerified) => {
 const verifyClaims = async (
   research: HealthInfluencer,
   journals: Journal[]
-) => {
+) : Promise<ChatCompletionResponse>  => {
   try {
-    // Function to process selected journals
-    console.log('>> research', research)
-    console.log('>> journals', journals)
+
     const processJournals = (journals: Journal[]): string => {
       const selectedJournals = journals
         .filter(journal => journal.selected)
         .map(journal => journal.name);
-      return selectedJournals.length > 0
-        ? `The following scientific journals will be used as references: ${selectedJournals.join(", ")}.`
-        : "No specific scientific journals were selected.";
+    
+      if (selectedJournals.length === 0) {
+        return "No specific scientific journals were selected.";
+      }
+    
+      const formattedList =
+        selectedJournals.length > 1
+          ? selectedJournals.slice(0, -1).join(", ") + " and " + selectedJournals.slice(-1)
+          : selectedJournals[0];
+    
+      return `The following scientific journals will be used as references: ${formattedList}.`;
     };
 
     // Messages for the AI
@@ -73,11 +75,12 @@ const verifyClaims = async (
         - Yearly Revenue: $${research.yearlyRevenue}  
         
         **Claims to Evaluate:**  
-        ${research.claims.map((claim, index) => `- ${index + 1}. ${claim}`).join("\n")}
+        ${research.claims.map((claim, index) => `- ${index + 1}. ${JSON.stringify(claim)}`).join("\n")}
 
         **Instructions:**  
         - Search for evidence in the selected journals.  
         - Return a JSON object with the following structure:
+        - As claim status use only "Verified", "Debunked" or "Questionable"
         
         **Strict JSON Format (No explanations, markdown, or additional text):**  
         \`\`\`json
@@ -122,7 +125,7 @@ const verifyClaims = async (
     ];
 
     // API Request
-    // const response = await axios.post<ChatCompletionResponse>(
+    // const response = await axios.post<HealthInfluencerVerified>(
     //   BASE_URL,
     //   {
     //     model: "sonar-pro",
@@ -139,15 +142,15 @@ const verifyClaims = async (
     // );
 
     // Validate the response is valid JSON before storing it
-    // if (!response.data || typeof response.data !== "object") {
-    //   throw new Error("Invalid response format: Expected a JSON object.");
-    // }
+    if (!response.data || typeof response.data !== "object") {
+      throw new Error("Invalid response format: Expected a JSON object.");
+    }
 
     console.log("Messages sent:", messages);
     // console.log("Response received:", response.data);
-
-    // return response.data as HealthInfluencerVerified;
-    return []
+    console.log('response.data', response.data)
+    return response.data as HealthInfluencerVerified;
+    // return messages
   } catch (error: any) {
     console.error("Error fetching chat completion:", error.response || error);
     throw error.response?.data || error.message;
@@ -157,7 +160,7 @@ const verifyClaims = async (
 
 export const fetchDataFromIA = async (
   messages: Message[]
-): Promise<HealthInfluencer> => {
+): Promise<HealthInfluencerVerified> => {
   try {
     // const response = await axios.post<ChatCompletionResponse>(
     //   BASE_URL,
@@ -174,7 +177,7 @@ export const fetchDataFromIA = async (
     //   }
     // );
 
-    const response : {data:HealthInfluencer} = {
+    const response : { data: HealthInfluencer } = {
       data: { 
         id: generateId(), 
         name: "Dr. Rhonda Patrick", 
@@ -196,7 +199,6 @@ export const fetchDataFromIA = async (
     // const transformedClaims = transformClaims(response.data);
     // console.log('transformedClaims', transformedClaims)
 
-    // saveInfo(response.data)
     // console.log('response:', response.data)
     return resClaimsProcessed;
     // return response.data;
@@ -207,18 +209,25 @@ export const fetchDataFromIA = async (
 };
 
 export const executeResearchAndVerify = async (messages: Message[], journals: Journal[]) => {
-
   try {
     const researchFromIA = await fetchDataFromIA(messages);
     if (!researchFromIA) throw new Error("Research data is undefined or invalid.");
-    console.log('pre messages', messages);
+    console.log('journals', journals);
     console.log('researchFromIA', researchFromIA);
     
-    const verifyResearch = await verifyClaims(researchFromIA, journals);
-    if (!verifyResearch) throw new Error("Failed to verify claims.");
+    // const verifyResearch = await verifyClaims(researchFromIA, journals);
+    // if (!verifyResearch) throw new Error("Failed to verify claims.");
+
+    const data = "{\n  \"id\": \"rhonda_patrick_001\",\n  \"name\": \"Dr. Rhonda Patrick\",\n  \"biography\": \"Dr. Rhonda Patrick is a scientist and health educator with a Ph.D. in Biomedical Science. She is the founder of FoundMyFitness, where she shares evidence-based insights on nutrition, aging, and disease prevention. Dr. Patrick conducts research on micronutrients, metabolism, and longevity, and is an associate scientist at the Fatty Acid Research Institute.\",\n  \"qFollowers\": 6100000,\n  \"yearlyRevenue\": 5000000,\n  \"claims\": [\n    {\n      \"id\": \"a7516d9c-6953-4cae-a273-8cb10784f434\",\n      \"text\": \"Fasting will increase testosterone levels\",\n      \"trustScore\": 20,\n      \"status\": \"Debunked\",\n      \"verifyLinkReference\": \"https://pubmed.ncbi.nlm.nih.gov/35684143/\",\n      \"category\": \"Hormones\"\n    },\n    {\n      \"id\": \"5414fa9f-0427-42ed-94f1-a2c8e9b75bbe\",\n      \"text\": \"Longer fasting will increase growth hormone levels\",\n      \"trustScore\": 60,\n      \"status\": \"Questionable\",\n      \"verifyLinkReference\": \"https://pubmed.ncbi.nlm.nih.gov/35684143/\",\n      \"category\": \"Hormones\"\n    },\n    {\n      \"id\": \"bc5e0f57-c4cc-46a6-858a-63abbd991280\",\n      \"text\": \"Exercise intensity as if being chased with a syringe of poison can boost performance\",\n      \"trustScore\": 30,\n      \"status\": \"Questionable\",\n      \"verifyLinkReference\": \"https://pubmed.ncbi.nlm.nih.gov/35684143/\",\n      \"category\": \"Exercise\"\n    },\n    {\n      \"id\": \"4ed71bb7-e53e-4118-bd6c-a116f09731a4\",\n      \"text\": \"Viewing sunlight within 30-60 minutes of waking enhances cortisol release\",\n      \"trustScore\": 70,\n      \"status\": \"Questionable\",\n      \"verifyLinkReference\": \"https://pubmed.ncbi.nlm.nih.gov/35684143/\",\n      \"category\": \"Circadian Rhythm\"\n    }\n  ]\n}"
+
+    // const parseResponse : HealthInfluencerVerified = JSON.parse(verifyResearch.choices[0].message.content)
+    const parsedResponse : HealthInfluencerVerified = JSON.parse(data);
+
+    await saveInfo(parsedResponse);
+    return parsedResponse
   } catch (err) {
     console.log('err at executeResearch', err)
   } finally {
-    alert('finished')
+    console.log('success!! finished!!')
   }
 }
