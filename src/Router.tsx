@@ -6,14 +6,14 @@ import InfluencerDetailPage from './pages/InfluencerDetail';
 
 const AppRoutes = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/research" element={<ResearchPage />} />
-        {/* <Route path="/chatbox" element={<ChatBox />} /> */}
-        <Route path="/leaderboard" element={<LeaderboardPage />} />
-        <Route path="/detail" element={<InfluencerDetailPage />} />
-      </Routes>
-    </Router>
+      // <Router>
+        <Routes>
+          <Route path="/research" element={<ResearchPage />} />
+          {/* <Route path="/chatbox" element={<ChatBox />} /> */}
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route path="/detail" element={<InfluencerDetailPage />} />
+        </Routes>
+      // </Router>
   );
 };
 

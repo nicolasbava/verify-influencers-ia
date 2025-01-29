@@ -6,6 +6,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./theme.ts";
 import { ResearchProvider } from './context/GlobalContext.tsx';
+import { BrowserRouter } from 'react-router-dom';
 
 // TODO put links of claim research and date of claim publish and profile picture -> save picture to bdd
 // TODO add categories to the health influencer for detail page 
@@ -18,11 +19,15 @@ import { ResearchProvider } from './context/GlobalContext.tsx';
 // TODO add input to allow client put his own api key
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+          <BrowserRouter>
+    
     <ResearchProvider>
       <ThemeProvider theme={theme}>   
         <CssBaseline />
             <App />
       </ThemeProvider>
     </ResearchProvider>
+    </BrowserRouter>
+
   </StrictMode>,
 )

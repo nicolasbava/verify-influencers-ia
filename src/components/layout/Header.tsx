@@ -13,6 +13,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { Link } from 'react-router-dom';
 
 interface Props {
   /**
@@ -24,7 +25,7 @@ interface Props {
 }
 
 const drawerWidth = 240;
-const navItems = ['Leaderboard'];
+const navItems = ['Leaderboard', 'Research'];
 
 export default function DrawerAppBar(props: Props) {
   const { window, children } = props;
@@ -77,9 +78,11 @@ export default function DrawerAppBar(props: Props) {
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {navItems.map((item) => (
-              <Button key={item} sx={{ color: '#fff' }}>
-                {item}
-              </Button>
+              <Link to={`/${item}`}>
+                <Button key={item} sx={{ color: '#fff' }}>
+                    {item}
+                </Button>
+              </Link>
             ))}
           </Box>
         </Toolbar>
