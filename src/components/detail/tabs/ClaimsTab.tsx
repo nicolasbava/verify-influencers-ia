@@ -18,16 +18,21 @@ const ButtonGreenSquared = styled(Button)(() => ({
     padding: '4px 12px',
     textTransform: 'capitalize',
     borderRadius: '5px',
-    background: '#0ea06f'
+    background: '#0ea06f',
+    width: '-webkit-fill-available'
 }));
 
 const ClaimsTab = () => {
     const { researchResponse } = useResearchContext();
     const [influencerData, setInfluencerData] = useState<HealthInfluencerVerified | null>(null)
+    const [categories, setCategories] = useState<string[]>([])
 
     useEffect(() => {
         if(researchResponse){
             setInfluencerData(researchResponse)
+        }
+        if(researchResponse && researchResponse.categories){
+            setCategories(researchResponse.categories)
         }
     }, [researchResponse])
 
@@ -54,21 +59,41 @@ const ClaimsTab = () => {
 
                 <Box mb={3}>
                     <Typography mb={1}>Categories</Typography>
-                    <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start'}}>
-                        <ButtonGreen variant='contained'>All Categories</ButtonGreen>
+                    <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 1}}>
+                   
+                        
+                            <ButtonGreen variant='contained'>All categories</ButtonGreen>
+                        
+                        {categories && categories.map(ele => (
+                            
+                                <ButtonGreen variant='contained'>{ele}</ButtonGreen>
+                            
+
+                        ))}
+                      
                     </Box>
                 </Box>
 
                 <Box>
-                    <Grid2 container>
+                    <Grid2 container spacing={2}>
                         <Grid2 size={6}>
                             <Typography mb={1}>Verification Status</Typography>
-                            <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 1}}>
-                                <ButtonGreenSquared variant='contained'>All Statuses</ButtonGreenSquared>
-                                <ButtonGreenSquared variant='contained'>Verified</ButtonGreenSquared>
-                                <ButtonGreenSquared variant='contained'>Questionable</ButtonGreenSquared>
-                                <ButtonGreenSquared variant='contained'>Debunked</ButtonGreenSquared>
-                            </Box>
+                            {/* <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 1}}> */}
+                            <Grid2 container spacing={1}>
+                                <Grid2 size={3}>
+                                    <ButtonGreenSquared variant='contained'>All Statuses</ButtonGreenSquared>
+                                </Grid2>  
+                                <Grid2 size={3}>
+                                    <ButtonGreenSquared variant='contained'>Verified</ButtonGreenSquared>
+                                </Grid2>
+                                <Grid2 size={3}>
+                                    <ButtonGreenSquared variant='contained'>Questionable</ButtonGreenSquared>
+                                </Grid2>
+                                <Grid2 size={3}>
+                                    <ButtonGreenSquared variant='contained'>Debunked</ButtonGreenSquared>
+                                </Grid2>
+                            </Grid2>
+                            {/* </Box> */}
                         </Grid2>
                         <Grid2 size={6}>
                             <Typography mb={1}>Sort By</Typography>
@@ -78,14 +103,18 @@ const ClaimsTab = () => {
                 </Box>
             </Box>
             <Box>
-                <Typography mb={2}>Showing 10 claims</Typography>
+                <Typography mb={2}>Showing {influencerData?.claims.length} claims</Typography>
                 {
                     influencerData?.claims && influencerData?.claims.length > 0 ? (
                         influencerData?.claims.map(ele => (
                                 <ClaimDetail claim={ele} />
                             )
                         )
-                    ) : 'NO CLAIMS FOUND'
+                    ) : 'Loading'
+                }
+
+                {
+                    influencerData?.claims.length === 0 && 'No claims found'
                 }
                 
             </Box>

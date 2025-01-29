@@ -7,7 +7,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./theme.ts";
 import { ResearchProvider } from './context/GlobalContext.tsx';
 
-// TODO put links of claim research and date of claim publish
+// TODO put links of claim research and date of claim publish and profile picture -> save picture to bdd
 // TODO add categories to the health influencer for detail page 
 // TODO add total claims verified for info boxes 
 // TODO add filters to detail page
