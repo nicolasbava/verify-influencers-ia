@@ -20,6 +20,7 @@ interface Props {
    * You won't need it on your project.
    */
   window?: () => Window;
+  children?: React.ReactNode;
 }
 
 const drawerWidth = 240;

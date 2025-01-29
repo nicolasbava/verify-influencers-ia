@@ -121,23 +121,23 @@ const verifyClaims = async (
     ];
 
     // API Request
-    // const response = await axios.post<HealthInfluencerVerified>(
-    //   BASE_URL,
-    //   {
-    //     model: "sonar-pro",
-    //     messages,
-    //     format: "json", // Ensures AI responds with pure JSON
-    //   },
-    //   {
-    //     headers: {
-    //       Accept: "application/json",
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${API_KEY}`,
-    //     },
-    //   }
-    // );
+    const response = await axios.post<ChatCompletionResponse>(
+      import.meta.env.VITE_BASE_URL,
+      {
+        model: "sonar-pro",
+        messages,
+        format: "json", // Ensures AI responds with pure JSON
+      },
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_API_KEY_AI}`,
+        },
+      }
+    );
 
-    const response = { data: {}}
+    // const response = { data: {}}
 
     // Validate the response is valid JSON before storing it
     if (!response.data || typeof response.data !== "object") {
