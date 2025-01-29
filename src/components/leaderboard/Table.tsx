@@ -36,13 +36,13 @@ const TableCellCustom = styled(TableCell)(() => ({
     color: 'white'
 }));
 
-const TableCellHeadCustom = styled(TableCell)(() => ({
-    // padding: '4px 12px',
-    // textTransform: 'capitalize',
-    // borderRadius: '25px',
-    // background: '#0ea06f',
-    color: 'white'
-}));
+// const TableCellHeadCustom = styled(TableCell)(() => ({
+//     // padding: '4px 12px',
+//     // textTransform: 'capitalize',
+//     // borderRadius: '25px',
+//     // background: '#0ea06f',
+//     color: 'white'
+// }));
 
 export default function BasicTable({data}: {data : Influencer[]}) {
   return (

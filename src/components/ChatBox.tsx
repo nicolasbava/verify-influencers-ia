@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { fetchDataFromIA } from "../api/perplexityApi";
+import { ChatCompletionRequest } from "../interfaces/Research";
 
 const ChatBox: React.FC = () => {
   const [userInput, setUserInput] = useState<string>("");
-  const [messages, setMessages] = useState<any[]>([
+  const [messages, setMessages] = useState<ChatCompletionRequest[]>([
     {
       "role": "system",
       "content": "You are an AI that searches health claims in tweets and podcast transcripts of health influencers. Extract and provide the result in JSON format with the following structure: { name, biography (max 75 words), claims (array of strings), yearlyRevenue (number in USD), qFollowers (number, total followers across all social media platforms) }. Focus only on health-related claims. Example claim: 'Viewing sunlight within 30-60 minutes of waking enhances cortisol release'. Return only the JSON output and nothing else."
     }
     
   ]); 
-  const [ setResponses] = useState([]);
+  // const [ setResponses] = useState<ChatCompletionResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSend = async () => {
@@ -25,10 +26,10 @@ const ChatBox: React.FC = () => {
 
     try {
       const result = await fetchDataFromIA(updatedMessages);
-      setResponses((prev) => [...prev, result.choices[0].message.content]);
+      // setResponses((prev) => [...prev, result.choices[0].message.content]);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: result.choices[0].message.content },
+        { role: "assistant", content: result.choices[0].message.content  },
       ]);
 
     } catch (error) {

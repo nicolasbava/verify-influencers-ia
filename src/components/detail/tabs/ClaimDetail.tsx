@@ -1,11 +1,17 @@
 import { Box, Divider, Typography } from "@mui/material";
 import { Claim } from "../../../interfaces/Research";
+// import { useState } from "react";
 
 interface ClaimDetailProps {
     claim: Claim;
 }
 
 const ClaimDetail = ({ claim }: ClaimDetailProps) => {
+    // const [sortBy, setSortBy] = useState('');
+
+    // const handleChange = (event: SelectChangeEvent) => {
+    //     setSortBy(event.target.value as string);
+    // };
 
     return (
         <Box my={4}>

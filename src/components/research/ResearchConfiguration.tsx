@@ -1,4 +1,4 @@
-import { Box, Grid2, Typography } from "@mui/material";
+import { Box, Grid2 } from "@mui/material";
 import InfluencerTypeSelector from "./InfluencerTypeSelector";
 import TimeRangeSelector from "./TimeRangeSelector";
 import RevenueAnalysisToggle from "./RevenueAnalysisToggle";

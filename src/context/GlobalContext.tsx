@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useState, ReactNode, useContext } from 'react';
 import { HealthInfluencerVerified } from '../interfaces/Research';
 
 // Define el tipo de los datos que se compartirán en el contexto
@@ -11,7 +11,7 @@ interface ResearchContextType {
     setIncludeRevenueAnalysis: (value: boolean) => void;
     timeRange: TimeRange;
     setTimeRange: (value: TimeRange) => void;
-    researchResponse: HealthInfluencerVerified;
+    researchResponse: HealthInfluencerVerified | null;
     setResearchResponse: (value: HealthInfluencerVerified) => void;
 }
 
@@ -27,6 +27,7 @@ enum TimeRange {
 const ResearchContext = createContext<ResearchContextType | undefined>(undefined);
 
 // Hook personalizado para usar el contexto
+// eslint-disable-next-line react-refresh/only-export-components
 export const useResearchContext = () => {
     const context = useContext(ResearchContext);
     if (!context) {
@@ -46,7 +47,7 @@ export const ResearchProvider = ({ children }: { children: ReactNode }) => {
     ]);
     const [includeRevenueAnalysis, setIncludeRevenueAnalysis] = useState(true);
     const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.LAST_WEEK);
-    const [researchResponse, setResearchResponse] = useState<HealthInfluencerVerified | null>()
+    const [researchResponse, setResearchResponse] = useState<HealthInfluencerVerified | null>(null)
 
     return (
         <ResearchContext.Provider

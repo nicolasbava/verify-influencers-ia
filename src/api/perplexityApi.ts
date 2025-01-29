@@ -1,13 +1,9 @@
-import axios from "axios";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { ChatCompletionResponse, HealthInfluencer, HealthInfluencerVerified, Journal, Message } from "../interfaces/Research";
-
+import axios from "axios";
 
 const generateId = () => crypto.randomUUID();
-
-
-
 
 const transformClaims = (data : HealthInfluencer) : HealthInfluencerVerified => {
   return {
@@ -141,6 +137,8 @@ const verifyClaims = async (
     //   }
     // );
 
+    const response = { data: {}}
+
     // Validate the response is valid JSON before storing it
     if (!response.data || typeof response.data !== "object") {
       throw new Error("Invalid response format: Expected a JSON object.");
@@ -151,9 +149,14 @@ const verifyClaims = async (
     console.log('response.data', response.data)
     return response.data as HealthInfluencerVerified;
     // return messages
-  } catch (error: any) {
-    console.error("Error fetching chat completion:", error.response || error);
-    throw error.response?.data || error.message;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+        console.error("Error fetching chat completion:", error.response || error.message);
+        throw error.response?.data || error.message;
+    } else {
+        console.error("Unexpected error:", error);
+        throw new Error("An unexpected error occurred");
+    }
   }
 };
 
@@ -196,15 +199,20 @@ export const fetchDataFromIA = async (
 
     console.log('messages', messages)
 
-    // const transformedClaims = transformClaims(response.data);
-    // console.log('transformedClaims', transformedClaims)
+    const transformedClaims = transformClaims(response.data);
+    console.log('transformedClaims', transformedClaims)
 
     // console.log('response:', response.data)
     return resClaimsProcessed;
     // return response.data;
-  } catch (error: any) {
-    console.error("Error fetching chat completion:", error.response || error);
-    throw error.response?.data || error.message;
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+        console.error("Error fetching chat completion:", error.response || error.message);
+        throw error.response?.data || error.message;
+    } else {
+        console.error("Unexpected error:", error);
+        throw new Error("An unexpected error occurred");
+    }
   }
 };
 
@@ -215,8 +223,8 @@ export const executeResearchAndVerify = async (messages: Message[], journals: Jo
     console.log('journals', journals);
     console.log('researchFromIA', researchFromIA);
     
-    // const verifyResearch = await verifyClaims(researchFromIA, journals);
-    // if (!verifyResearch) throw new Error("Failed to verify claims.");
+    const verifyResearch = await verifyClaims(researchFromIA, journals);
+    if (!verifyResearch) throw new Error("Failed to verify claims.");
 
     const data = "{\n  \"id\": \"rhonda_patrick_001\",\n  \"name\": \"Dr. Rhonda Patrick\",\n  \"biography\": \"Dr. Rhonda Patrick is a scientist and health educator with a Ph.D. in Biomedical Science. She is the founder of FoundMyFitness, where she shares evidence-based insights on nutrition, aging, and disease prevention. Dr. Patrick conducts research on micronutrients, metabolism, and longevity, and is an associate scientist at the Fatty Acid Research Institute.\",\n  \"qFollowers\": 6100000,\n  \"yearlyRevenue\": 5000000,\n  \"claims\": [\n    {\n      \"id\": \"a7516d9c-6953-4cae-a273-8cb10784f434\",\n      \"text\": \"Fasting will increase testosterone levels\",\n      \"trustScore\": 20,\n      \"status\": \"Debunked\",\n      \"verifyLinkReference\": \"https://pubmed.ncbi.nlm.nih.gov/35684143/\",\n      \"category\": \"Hormones\"\n    },\n    {\n      \"id\": \"5414fa9f-0427-42ed-94f1-a2c8e9b75bbe\",\n      \"text\": \"Longer fasting will increase growth hormone levels\",\n      \"trustScore\": 60,\n      \"status\": \"Questionable\",\n      \"verifyLinkReference\": \"https://pubmed.ncbi.nlm.nih.gov/35684143/\",\n      \"category\": \"Hormones\"\n    },\n    {\n      \"id\": \"bc5e0f57-c4cc-46a6-858a-63abbd991280\",\n      \"text\": \"Exercise intensity as if being chased with a syringe of poison can boost performance\",\n      \"trustScore\": 30,\n      \"status\": \"Questionable\",\n      \"verifyLinkReference\": \"https://pubmed.ncbi.nlm.nih.gov/35684143/\",\n      \"category\": \"Exercise\"\n    },\n    {\n      \"id\": \"4ed71bb7-e53e-4118-bd6c-a116f09731a4\",\n      \"text\": \"Viewing sunlight within 30-60 minutes of waking enhances cortisol release\",\n      \"trustScore\": 70,\n      \"status\": \"Questionable\",\n      \"verifyLinkReference\": \"https://pubmed.ncbi.nlm.nih.gov/35684143/\",\n      \"category\": \"Circadian Rhythm\"\n    }\n  ]\n}"
 

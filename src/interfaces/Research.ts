@@ -17,6 +17,11 @@ export type Claim = {
     category: string
 }
 
+export interface ChatCompletionRequest {
+    role: string,
+    content: string
+}
+
 export interface ChatCompletionResponse {
     choices: {
       message: Message;
