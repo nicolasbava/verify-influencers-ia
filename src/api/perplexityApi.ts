@@ -25,6 +25,7 @@ const transformClaims = (data : HealthInfluencer) : HealthInfluencerVerified => 
 };
 
 const saveInfo = async (data: HealthInfluencerVerified) => {
+  // TODO find if dr name is not already saved to avoid saving duplicates
   try {
     const docRef = await addDoc(collection(db, "health-influencers"), data);
     console.log("Data saved with ID: ", docRef.id);

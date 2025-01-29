@@ -4,7 +4,7 @@ import { useResearchContext } from "../../context/GlobalContext";
 import { HealthInfluencerVerified } from "../../interfaces/Research";
 
 const ProfileComponent = () => {
-    const [categories] = useState(['Neuroscience', 'Sleep', 'Performance', 'Neuroscience', 'Sleep', 'Performance'])
+    const [categories, setCategories] = useState<string[]>([])
     const { researchResponse } = useResearchContext();
     const [influencerData, setInfluencerData] = useState<HealthInfluencerVerified | null>(null)
 
@@ -12,7 +12,9 @@ const ProfileComponent = () => {
         if(researchResponse){
             setInfluencerData(researchResponse)
         }
-
+        if(researchResponse && researchResponse.categories){
+            setCategories(researchResponse.categories)
+        }
     }, [researchResponse])
 
     return (
