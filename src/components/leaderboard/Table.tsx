@@ -12,7 +12,7 @@ import SyncAltOutlinedIcon from '@mui/icons-material/SyncAltOutlined';
 import { HealthInfluencerVerified } from '../../interfaces/Research';
 import { useNavigate } from 'react-router-dom'; // For redirection
 import { useResearchContext } from '../../context/GlobalContext';
-
+import MovingIcon from '@mui/icons-material/Moving';
 export interface Influencer {
     name: string;
     totalTrustPercentage: number;
@@ -98,7 +98,7 @@ export default function BasicTable({ data }: { data: HealthInfluencerVerified[] 
                                 <TableCellCustomInfo sx={{ fontWeight: 'bold', color: getStatusColor(Number(row.totalTrustPercentage)) }}>
                                     {row.totalTrustPercentage}%
                                 </TableCellCustomInfo>
-                                <TableCellCustomInfo>?</TableCellCustomInfo>
+                                <TableCellCustomInfo><MovingIcon sx={{color: Math.random() % 2 === 0 ? 'red' : 'secondary.light'}} /></TableCellCustomInfo>
                                 <TableCellCustomInfo>{formatRevenue(row.qFollowers)}+</TableCellCustomInfo>
                                 <TableCellCustomInfo>241</TableCellCustomInfo>
                             </TableRow>

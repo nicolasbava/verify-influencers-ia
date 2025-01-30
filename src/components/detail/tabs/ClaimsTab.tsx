@@ -172,6 +172,7 @@ const ClaimsTab = () => {
                         placeholder="Search..."
                         fullWidth
                         size={'small'}
+                        // disabled
                         slotProps={{
                             input: { 
                                 startAdornment:(
@@ -211,7 +212,7 @@ const ClaimsTab = () => {
                         </Grid2>
                         <Grid2 size={6}>
                             <Typography mb={1}>Sort By</Typography>
-                            <Box sx={{ minWidth: 120, display: 'flex', alignItems: 'center', gap: 2  }}>
+                            <Box sx={{ minWidth: 120, display: 'flex', alignItems: 'center', gap: 2, mt: '-3px'  }}>
                                 <FormControl sx={{background: 'primary.dark'}} size={'small'} fullWidth
                                      
                                 >
@@ -221,6 +222,9 @@ const ClaimsTab = () => {
                                         value={filterBy}
                                         onChange={handleChangeOrder}
                                         sx={{
+                                            background: '#101827',
+                                            color: 'white',
+                                            border: '1px solid #80808061',
                                             '&.MuiSelect-select': {
                                                 boxShadow: '0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12)',
                                                 opacity: 1,
@@ -243,8 +247,8 @@ const ClaimsTab = () => {
                                         {/* <MenuItem value={}>Thirty</MenuItem> */}
                                     </Select>
                                 </FormControl>
-                                <Button variant="contained" color="primary" onClick={toggleSortOrder} >
-                                    <SortOutlinedIcon sx={{transform: isDescending ? 'rotate(0deg)' : 'rotate(180deg)' }} />
+                                <Button sx={{ background: '#101827'}} variant="contained" color="primary" onClick={toggleSortOrder} >
+                                    <SortOutlinedIcon sx={{transform: isDescending ? 'rotate(0deg)' : 'rotate(180deg)'}} />
                                 </Button>
                             </Box>
                         </Grid2>
