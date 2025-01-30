@@ -23,3 +23,14 @@ export const getUniqueCategories = (claims: Claim[]): string[] => {
     
     return uniqueCategories.slice(0, 10);
 };
+
+export const getStatusColor = (number: number): string => {
+    if (number >= 66 && number <= 100) {
+      return '#34d097';
+    } else if (number >= 33 && number < 66) {
+      return '#f7ca14';
+    } else if (number >= 0 && number < 33) {
+      return '#f23838';
+    }
+    return '';
+};

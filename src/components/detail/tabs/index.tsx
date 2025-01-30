@@ -57,8 +57,8 @@ const DetailTabs = () => {
             }}  
         >
           <Tab label="Claims Analysis" {...a11yProps(0)} />
-          <Tab label="Recommended Products" {...a11yProps(1)} />
-          <Tab label="Monetization" {...a11yProps(2)} />
+          <Tab disabled label="Recommended Products" {...a11yProps(1)} />
+          <Tab disabled label="Monetization" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>

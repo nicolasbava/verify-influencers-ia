@@ -1,40 +1,149 @@
-import { Box, Button, Grid2, InputAdornment, styled, TextField, Typography } from "@mui/material";
+import { Box, Button, FormControl, Grid2, InputAdornment, MenuItem, Select, SelectChangeEvent, styled, Typography } from "@mui/material";
 import ClaimDetail from "./ClaimDetail";
 import SearchIcon from "@mui/icons-material/Search";
 import { useResearchContext } from "../../../context/GlobalContext";
 import { useEffect, useState } from "react";
-import { HealthInfluencerVerified } from "../../../interfaces/Research";
+import { Claim, HealthInfluencerVerified } from "../../../interfaces/Research";
 import { CustomTextField } from "../../styled";
 import theme from "../../../theme";
 
-const ButtonGreen = styled(Button)(() => ({
+const ButtonGreen = styled(Button)<{active: boolean}>(({active}) => ({
     padding: '4px 12px',
     textTransform: 'capitalize',
     borderRadius: '25px',
-    background: '#0ea06f'
+    backgroundColor: active ? theme.palette.secondary.light : theme.palette.primary.dark,
+    border: active ? `1px solid #0ea06f` :`1px solid grey`,
 }));
 
-const ButtonGreenSquared = styled(Button)(() => ({
+const ButtonGreenSquared = styled(Button)<{active: boolean}>(({theme, active}) => ({
     padding: '4px 12px',
     textTransform: 'capitalize',
     borderRadius: '5px',
-    background: '#0ea06f',
+    background: active ? '#0ea06f' : theme.palette.primary.dark,
     width: '-webkit-fill-available'
 }));
+
+interface Category {
+    name: string,
+    selected: boolean
+}
+
+interface Status {
+    name: string,
+    selected: boolean
+}
 
 const ClaimsTab = () => {
     const { researchResponse } = useResearchContext();
     const [influencerData, setInfluencerData] = useState<HealthInfluencerVerified | null>(null)
-    const [categories, setCategories] = useState<string[]>([])
+    const [categories, setCategories] = useState<Category[]>([])
+    const [filteredClaims, setFilteredClaims] = useState<Claim[]>([]);
+    const [age, setAge] = useState('');
+    const [selectedStatuses, setSelectedStatuses] = useState<Status[]>([
+        {
+            name: 'All',
+            selected: true
+        },
+        {
+            name: 'Questionable',
+            selected: true
+        },
+        {
+            name: 'Verified',
+            selected: true
+        },
+        {
+            name: 'Debunked',
+            selected: true
+        },
+    ])
+
+    
+    const handleChange = (event: SelectChangeEvent) => {
+        setAge(event.target.value as string);
+    };
+        
+    const isAllCatTrue = () => {
+        if(categories && categories.map(ele => ele.selected === true)){
+            return true
+        }else {
+            return false
+        }
+    }
+
+    const handleCategoryClick = (categoryName: string) => {
+        setCategories(prevCategories =>
+          prevCategories.map(cat =>
+            cat.name === categoryName ? { ...cat, selected: !cat.selected } : cat
+          )
+        );
+    };
+
+    const selectAllCategories = () => {
+        setCategories(prevCat => prevCat.map(ele => ({ ...ele, selected: true })));
+    };
+
+    const selectAllStatuses = () => {
+        setSelectedStatuses(prevStatus => prevStatus.map(ele => ({ ...ele, selected: true })));
+    };
+
+    const handleStatusClick = (status: string) => {
+        if(status === 'All') return selectAllStatuses()
+        setSelectedStatuses(prevStatuses =>
+            prevStatuses.map(ele =>
+            ele.name === status ? { ...ele, selected: !ele.selected } : ele
+          )
+        );
+    };
+
 
     useEffect(() => {
         if(researchResponse){
             setInfluencerData(researchResponse)
         }
         if(researchResponse && researchResponse.categories){
-            setCategories(researchResponse.categories)
+            const processedCategories: Category[] = researchResponse.categories.map(category => ({
+                name: category,
+                selected: true,
+            }));
+            setCategories(processedCategories);
         }
     }, [researchResponse])
+    
+
+    useEffect(() => {
+        if (!influencerData || !influencerData.claims) return;
+      
+        // Get the selected categories
+        const selectedCategories = categories
+          .filter(category => category.selected)
+          .map(category => category.name);
+      
+        // Get the selected statuses
+        const filteredStatuses = selectedStatuses
+          .filter(status => status.selected)
+          .map(status => status.name);
+      
+        // If no categories or statuses are selected, return all claims
+        if (selectedCategories.length === 0 && filteredStatuses.length === 0) {
+          setFilteredClaims(influencerData.claims);
+          return;
+        }
+      
+        // Filter claims by category and status
+        const newFilteredClaims = influencerData.claims.filter(claim => {
+          const matchesCategory =
+            selectedCategories.includes(claim.category) || selectedCategories.includes('All');
+          const matchesStatus =
+            filteredStatuses.includes(claim.status) || filteredStatuses.includes('All');
+      
+          return matchesCategory && matchesStatus;
+        });
+      
+        setFilteredClaims(newFilteredClaims);
+      }, [categories, influencerData, selectedStatuses]);
+
+
 
     return (
         <Box>
@@ -49,7 +158,7 @@ const ClaimsTab = () => {
                             input: { 
                                 startAdornment:(
                                     <InputAdornment position="start">
-                                        <SearchIcon />
+                                        <SearchIcon sx={{color: 'grey'}} />
                                     </InputAdornment>
                                 )
                             }
@@ -60,17 +169,10 @@ const ClaimsTab = () => {
                 <Box mb={3}>
                     <Typography mb={1}>Categories</Typography>
                     <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 1}}>
-                   
-                        
-                            <ButtonGreen variant='contained'>All categories</ButtonGreen>
-                        
-                        {categories && categories.map(ele => (
-                            
-                                <ButtonGreen variant='contained'>{ele}</ButtonGreen>
-                            
-
+                        <ButtonGreen active={isAllCatTrue()} onClick={() => selectAllCategories()} variant='contained'>All</ButtonGreen>
+                        {categories && categories.map((ele, key) => (
+                            <ButtonGreen key={key} onClick={() => handleCategoryClick(ele.name)} active={ele.selected}  variant='contained' value={ele.name}>{ele.name}</ButtonGreen>
                         ))}
-                      
                     </Box>
                 </Box>
 
@@ -78,36 +180,44 @@ const ClaimsTab = () => {
                     <Grid2 container spacing={2}>
                         <Grid2 size={6}>
                             <Typography mb={1}>Verification Status</Typography>
-                            {/* <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 1}}> */}
                             <Grid2 container spacing={1}>
-                                <Grid2 size={3}>
-                                    <ButtonGreenSquared variant='contained'>All Statuses</ButtonGreenSquared>
-                                </Grid2>  
-                                <Grid2 size={3}>
-                                    <ButtonGreenSquared variant='contained'>Verified</ButtonGreenSquared>
-                                </Grid2>
-                                <Grid2 size={3}>
-                                    <ButtonGreenSquared variant='contained'>Questionable</ButtonGreenSquared>
-                                </Grid2>
-                                <Grid2 size={3}>
-                                    <ButtonGreenSquared variant='contained'>Debunked</ButtonGreenSquared>
-                                </Grid2>
+                                {selectedStatuses && selectedStatuses.map((ele, key) => 
+                                    (
+                                        <Grid2 key={key} size={3}>
+                                            <ButtonGreenSquared onClick={() => handleStatusClick(ele.name)} active={ele.selected} variant='contained'>{ele.name}</ButtonGreenSquared>
+                                        </Grid2>
+                                    )
+                                )}
                             </Grid2>
-                            {/* </Box> */}
                         </Grid2>
                         <Grid2 size={6}>
                             <Typography mb={1}>Sort By</Typography>
-                            <TextField />
+                            <Box sx={{ minWidth: 120 }}>
+                                <FormControl sx={{background: 'primary.dark'}} size={'small'} fullWidth>
+                                    {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={age}
+                                        // label="Age"
+                                        onChange={handleChange}
+                                    >
+                                        <MenuItem selected  value={'Date'}>Date</MenuItem>
+                                        <MenuItem value={'Trust'}>Twenty</MenuItem>
+                                        {/* <MenuItem value={}>Thirty</MenuItem> */}
+                                    </Select>
+                                </FormControl>
+                            </Box>
                         </Grid2>
                     </Grid2>
                 </Box>
             </Box>
             <Box>
-                <Typography mb={2}>Showing {influencerData?.claims.length} claims</Typography>
+                <Typography sx={{opacity: '0.6', fontSize: '17px'}} mb={2}>Showing {influencerData?.claims.length} claims</Typography>
                 {
-                    influencerData?.claims && influencerData?.claims.length > 0 ? (
-                        influencerData?.claims.map(ele => (
-                                <ClaimDetail claim={ele} />
+                    filteredClaims && filteredClaims.length > 0 ? (
+                        filteredClaims.map((ele, key) => (
+                                <ClaimDetail key={key} claim={ele} />
                             )
                         )
                     ) : 'Loading'
@@ -116,6 +226,9 @@ const ClaimsTab = () => {
                 {
                     influencerData?.claims.length === 0 && 'No claims found'
                 }
+
+
+                {JSON.stringify(influencerData?.claims)}
                 
             </Box>
         </Box>

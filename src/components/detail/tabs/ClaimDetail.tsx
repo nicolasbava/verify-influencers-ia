@@ -1,10 +1,49 @@
-import { Box, Divider, Typography } from "@mui/material";
+import { Box, Divider, styled, Typography } from "@mui/material";
 import { Claim } from "../../../interfaces/Research";
-// import { useState } from "react";
-
+import { getStatusColor } from "../../../utils";
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
+import { Link } from "react-router-dom";
 interface ClaimDetailProps {
     claim: Claim;
 }
+
+const TypographyCustom = styled(Typography)<{ status: string }>(({ theme, status }) => ({
+    padding: '4px 12px',
+    borderRadius: '29px',
+    textTransform: 'lowercase',
+    opacity: '0.9',
+    fontSize: '14px',
+    color: 
+      status === 'Verified' 
+        ? '#32ce96' 
+        : status === 'Questionable'
+        ? '#e3a744' 
+        : status === 'Debunked'
+        ? '#db857e'
+        : theme.palette.primary.dark, 
+    background: 
+      status === 'Verified' 
+        ? '#133d3b' 
+        : status === 'Questionable'
+        ? '#51360e' 
+        : status === 'Debunked'
+        ? '#6b1e18'
+        : theme.palette.primary.dark, 
+}));
+
+const StatusTypography = styled(Typography)<{ trustStatus: number }>(({ trustStatus }) => ({
+    fontSize: '25px',
+    color: getStatusColor(trustStatus) ?? 'white',
+    fontWeight: 'bold', 
+    lineHeight: 1,
+
+}));
+
+
+const ImgIcon = styled('img')(() => ({
+    width: '25px',
+
+}));
 
 const ClaimDetail = ({ claim }: ClaimDetailProps) => {
     // const [sortBy, setSortBy] = useState('');
@@ -15,26 +54,43 @@ const ClaimDetail = ({ claim }: ClaimDetailProps) => {
 
     return (
         <Box my={4}>
-            <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb:1}}>
+            <Box sx={{display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb:1,}}>
                 <Box  sx={{display: 'flex', alignItems: 'center',}}>
-                    <Box sx={{background: '#ffffff26', width: '15px', borderRadius: '25px', height: '10px', mr: 2}}></Box>
-                    <Typography>{claim.status}</Typography>
+                    <Box sx={{background: '#ffffff26', width: '23px', borderRadius: '25px', height: '10px', mr: 2, opacity: '0.3'}}></Box>
+                    <TypographyCustom status={claim.status}>{claim.status}</TypographyCustom>
                 </Box>
-                <Box >
-                    <Typography fontWeight='bold'>{claim.trustScore}%</Typography>
-                    <Typography variant='caption' >Trust Score</Typography>
+                <Box sx={{textAlign: 'right'}} >
+                    <StatusTypography trustStatus={claim.trustScore} >{claim.trustScore}%</StatusTypography>
+                    <Typography variant='caption' sx={{opacity: '0.6'}} >Trust Score</Typography>
                 </Box>
             </Box>
 
-            <Box>
+            <Box mt={-2} mb={4}>
                 <Box  mb={2}>
                     <Typography mb={1} sx={{fontWeight: 'bold', fontSize: '18px'}} >{claim.text}</Typography>
-                    <Typography sx={{color: 'secondary.light', fontWeight: 'bold'}} >View source</Typography>
+                    <Link to='/' target="_blank">
+                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                                <Typography sx={{color: 'secondary.light'}} >View source </Typography>
+                                <OpenInNewOutlinedIcon sx={{fontSize: '15px', color: 'secondary.light', ml: 1, mt:'2px'}} />
+                        </Box>
+                    </Link>
                 </Box>
                 <Box ml={4} mb={4}>
-                    <Typography  mb={1} sx={{fontWeight: 'bold'}} >AI Analisys</Typography>
+                    <Box sx={{display: 'flex', alignItems: 'center', gap: 1, mb: 1}}>
+                        <ImgIcon
+                            src="src/assets/brain.png"
+                            alt="Example"
+                            loading="lazy"
+                        />
+                        <Typography sx={{fontWeight: 'bold'}} >AI Analisys</Typography>
+                    </Box>
                     <Typography  mb={1} sx={{color: '#ffffff80'}} >Multiple studies confirm that..</Typography>
-                    <Typography sx={{color: 'secondary.light', mb:1, fontWeight: 'bold'}}>{claim.verifyLinkReference}</Typography>
+                    <Link to={claim.verifyLinkReference} target='_blank'>
+                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                            <Typography sx={{color: 'secondary.light'}}>View Research</Typography>
+                            <OpenInNewOutlinedIcon sx={{fontSize: '15px', color: 'secondary.light', ml: 1, }} />
+                        </Box>
+                    </Link>
                 </Box>
             </Box>
 

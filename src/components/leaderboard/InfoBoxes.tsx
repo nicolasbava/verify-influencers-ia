@@ -16,7 +16,7 @@ const InfoBoxes = () => {
             <Grid2 container spacing={3}>
                 <Grid2 size={4}>
                     <StyledBox sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                        <PeopleAltOutlinedIcon />
+                        <PeopleAltOutlinedIcon sx={{fontSize: '40px', color: 'secondary.light'}} />
                         
                         <Box>
                             <NumberBold>1,234</NumberBold>
@@ -26,7 +26,7 @@ const InfoBoxes = () => {
                 </Grid2>
                 <Grid2 size={4}>
                     <StyledBox sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                        <TaskAltOutlinedIcon />
+                        <TaskAltOutlinedIcon sx={{fontSize: '40px', color: 'secondary.light'}} />
                         
                         <Box>
                             <NumberBold>24,234</NumberBold>
@@ -36,7 +36,7 @@ const InfoBoxes = () => {
                 </Grid2>
                 <Grid2 size={4}>
                     <StyledBox sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-                        <BarChartOutlinedIcon />
+                        <BarChartOutlinedIcon sx={{fontSize: '40px', color: 'secondary.light'}}  />
                         
                         <Box>
                             <NumberBold>86,3%</NumberBold>

@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { collection, getDocs, getFirestore, limit, orderBy, query, startAfter } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY_FIREBASE,
@@ -10,6 +10,36 @@ const firebaseConfig = {
     messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
     appId: import.meta.env.VITE_APP_ID,
     measurementId: import.meta.env.VITE_MEASUREMENT_ID
+};
+
+
+// This function will fetch data with pagination
+export const fetchPagedData = async (pageSize: number, lastDoc: any = null) => {
+    try {
+      const influencersRef = collection(db, "health-influencers");
+      let q = query(influencersRef, orderBy("name"), limit(pageSize));
+  
+
+      if (lastDoc) {
+        q = query(q, startAfter(lastDoc)); 
+      }
+
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        console.log("No more data available.");
+        return { data: [], lastVisible: null };
+      }
+  
+      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+  
+      return { data, lastVisible };
+    } catch (e) {
+      console.error("Error fetching paged data: ", e);
+      return { data: [], lastVisible: null };
+    }
 };
 
 const app = initializeApp(firebaseConfig);

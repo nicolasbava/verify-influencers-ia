@@ -1,4 +1,4 @@
-import { Box, Button, FormControlLabel, Grid2, Modal, Typography } from "@mui/material";
+import { Box, Button, FormControlLabel, Grid2, InputAdornment, Modal, Typography } from "@mui/material";
 import theme from "../../theme";
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import { styled } from "@mui/system";
@@ -10,19 +10,11 @@ import { useResearchContext } from "../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { CustomTextField } from "../styled";
 import { calculateTotalTrustScore, getUniqueCategories } from "../../utils";
+import SearchIcon from "@mui/icons-material/Search";
 
 const BORDER_BOX = '#41c79a6b';
 const BORDER_BOX_GREY = '#80808070';
 const BORDER_BOX_INACTIVE = '#80808042';
-
-// const CustomTextField = styled(TextField)({
-//     '& .MuiOutlinedInput-root': {
-//       backgroundColor: '#101827', // Fondo
-//       border: '1px solid #80808078', // Borde
-//       borderRadius: '9px',
-//       color: 'white' // Bordes redondeados
-//     },
-//   });
 
 const StyledButton = styled(Button)<{ active?: boolean }>(({ theme, active }) => ({
     backgroundColor: active ? theme.palette.secondary.dark : theme.palette.primary.dark,
@@ -35,6 +27,19 @@ const StyledButton = styled(Button)<{ active?: boolean }>(({ theme, active }) =>
     textTransform: 'capitalize',
     width: '-webkit-fill-available',
 }));
+
+const StyledButtonJournal = styled(Button)<{ active?: boolean }>(({ theme, active }) => ({
+    backgroundColor: active ? theme.palette.secondary.dark : theme.palette.primary.dark,
+    border: active ? `2px solid ${BORDER_BOX}` : `2px solid ${BORDER_BOX_INACTIVE}` ,
+    color: active ? theme.palette.secondary.main : 'grey',
+    padding: '8px 8px',
+    borderRadius: '8px',
+    textAlign: "center",
+    cursor: 'pointer',
+    textTransform: 'capitalize',
+    width: '-webkit-fill-available',
+}));
+
 
 const StyledBox = styled(Box)<{ active?: boolean }>(({ theme, active }) => ({
     backgroundColor: active ? theme.palette.primary.dark : theme.palette.secondary.dark,
@@ -55,7 +60,7 @@ enum TimeRange {
     ALL_TIME = "ALL_TIME",
 }
 
-const generateSystemMessage = (includeRevenueAnalysis: boolean, timeRange: TimeRange): string => {
+const generateSystemMessage = (includeRevenueAnalysis: boolean, timeRange: TimeRange, qMaxClaims: number): string => {
     const basePrompt =
         "You are an AI that searches health claims in tweets and podcast transcripts of health influencers. Provide the result in JSON format with the following structure: { name, biography (max 75 words), claims (array of strings), qFollowers: (number total followers in all social media)";
 
@@ -74,20 +79,20 @@ const generateSystemMessage = (includeRevenueAnalysis: boolean, timeRange: TimeR
             ? " Search for tweets and podcast transcripts from all time."
             : " Search for tweets and podcast transcripts.";
 
-    return `${basePrompt}${revenuePrompt} }.${timeRangePrompt} Focus on extracting health-related claims. Example claim: 'Viewing sunlight within 30-60 minutes of waking enhances cortisol release'. Return only the JSON output and nothing else.`;
+    return `${basePrompt}${revenuePrompt} }. Search for a maximum of ${qMaxClaims} claims. ${timeRangePrompt} Focus on extracting health-related claims. Example claim: 'Viewing sunlight within 30-60 minutes of waking enhances cortisol release'. Return only the JSON output and nothing else.`;
 };
 
 
 
 const ResearchForm = () => {
-    const navigate = useNavigate();
+
     const [loading, setLoading] = useState<boolean>(false);
     const [userInput, setUserInput] = useState<string>("");
     const [newJournal, setNewJournal] = useState<string>("");
     // const [responses, setResponses] = useState([]);
     // const [qProducts, setQProducts] = useState<number>(15);
     // const [notesSearch, setNotesSearch] = useState<string>('')
-    const [messages, setMessages] = useState([
+    const [ setMessages] = useState([
         {
             role: "system",
             content: "",
@@ -96,10 +101,14 @@ const ResearchForm = () => {
     const [newResearch, setNewResearch] = useState<boolean>(false);
     const [includeRevenueAnalysis, setIncludeRevenueAnalysis] = useState<boolean>(true);
     const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.LAST_WEEK);
+    const [qClaimsToFind, setQClaimsToFind] = useState<number>(15);
+    const [verifyClaims, setVerifyClaims] = useState<boolean>(true);
+    const [notesForAssistant, setNotesForAssistant] = useState<string>('');
     const [open, setOpen] = useState<boolean>(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const { setResearchResponse } = useResearchContext();
+    const navigate = useNavigate()
     
     const [journals, setJournals] = useState([
         {name: 'PubMed Central', selected: true}, 
@@ -138,22 +147,27 @@ const ResearchForm = () => {
         if (!userInput.trim()) return;
 
         const payload : Message[] = [
-            { role: "system", content: generateSystemMessage(includeRevenueAnalysis, timeRange)},
-            { role: "user", content: `Search for claims of ${userInput}` },
+            { role: "system", content: generateSystemMessage(includeRevenueAnalysis, timeRange, qClaimsToFind)},
+            { role: "user", content: `Search for claims of ${userInput}. ${notesForAssistant.length > 0 ? 'Notes added by the user: ' 
+                + notesForAssistant : ''}` },
         ];
-        setMessages(payload);
+        // setMessages(payload);
         setLoading(true);
 
-        // console.log('payload', payload)
+        console.log('payload', payload)
 
         try {
-            const result = await executeResearchAndVerify(payload, journals);
+            const result = await executeResearchAndVerify(payload, journals, verifyClaims);
             // setResponses((prev) => [...prev, result.choices[0].message.content]);
             // setMessages((prev) => [
             //     ...prev,
             //     { role: "assistant", content: result.choices[0].message.content },
             // ]);
             if(!result) throw new Error('problem with research result')
+                
+            console.log('====================================');
+            console.log('PASE DESPUES DE EXECUTE AND VERIFY');
+            console.log('====================================');    
             const calculateTotalResults : HealthInfluencerVerified = {
                 ...result,
                 totalTrustPercentage: calculateTotalTrustScore(result.claims),
@@ -166,12 +180,26 @@ const ResearchForm = () => {
         } finally {
             setLoading(false);
             setUserInput("");
+            navigate('/detail')
         }
     };
     
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIncludeRevenueAnalysis(event.target.checked);
     };
+
+    const handleChangeVerifyClaims = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setVerifyClaims(event.target.checked);
+    };
+
+    const selectAllJournals = () => {
+        setJournals(prevJournals => prevJournals.map(ele => ({ ...ele, selected: true })));
+    };
+
+    const deselectAllJournals = () => {
+        setJournals(prevJournals => prevJournals.map(ele => ({ ...ele, selected: false })));
+    };
+
 
     const toggleJournalSelection = (index: number) => {
         setJournals((prevJournals) =>
@@ -187,7 +215,6 @@ const ResearchForm = () => {
             onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();
-                navigate('/detail')
             }}
         >
             <Box sx={{border: '1px solid #80808042', padding: '24px 24px', borderRadius: '8px', background: theme.palette.primary.light}}>
@@ -200,13 +227,13 @@ const ResearchForm = () => {
                         <Grid2 size={6}>
                             <StyledBox active={newResearch}  onClick={() => setNewResearch(false)}>
                                 <Typography sx={{fontWeight: 'bold', fontSize: '18px'}}>Specific Influencer</Typography>
-                                <Typography variant="body1" sx={{opacity: '0.6'}}>Research a known health influencer by name</Typography>
+                                <Typography variant="body1" sx={{opacity: '0.6', fontSize: '13px'}}>Research a known health influencer by name</Typography>
                             </StyledBox>
                         </Grid2>
                         <Grid2 size={6}>
                             <StyledBox active={!newResearch} onClick={() => setNewResearch(true)}>
                                 <Typography sx={{fontWeight: 'bold', fontSize: '18px'}}>Discover New</Typography>
-                                <Typography variant="body1" sx={{opacity: '0.6'}}>Find and analyze new health influencers</Typography>
+                                <Typography variant="body1" sx={{opacity: '0.6', fontSize: '13px'}}>Find and analyze new health influencers</Typography>
                             </StyledBox>
                         </Grid2>
                     </Grid2>
@@ -236,18 +263,37 @@ const ResearchForm = () => {
                             <CustomTextField 
                                 size={'small'} 
                                 id="outlined-basic" 
-                                placeholder="Search" 
+                                placeholder="Enter influencer name" 
                                 variant="outlined" 
                                 fullWidth
                                 onChange={(ele) => {
                                     setUserInput(ele.target.value)
                                 }} 
+                                slotProps={{
+                                    input: { 
+                                        startAdornment:(
+                                            <InputAdornment position="start">
+                                                <SearchIcon sx={{color:'grey'}} />
+                                            </InputAdornment>
+                                        )
+                                    }
+                                }}
                             />
                         </Box>
                         
                         <Box mb={2}>
                             <Typography mb={1}>Claims to analyze per influencer</Typography>
-                            <CustomTextField size={'small'} fullWidth  id="outlined-basic" placeholder="Outlined" variant="outlined" /><br/>
+                            <CustomTextField 
+                                onChange={(ele) => setQClaimsToFind(Number(ele.target.value))} 
+                                size={'small'} 
+                                fullWidth 
+                                value={qClaimsToFind} 
+                                id="outlined-basic" 
+                                placeholder="15" 
+                                variant="outlined" 
+                                
+                            />
+                                <br/>
                             <Typography variant="caption">Recommended: 50-100 claims for comprehensive analysis</Typography>
                         </Box>
 
@@ -257,7 +303,7 @@ const ResearchForm = () => {
                     <Grid2 size={6} mb={2}>
                         <Box mb={3}>
                             <Typography mb={1}>Products To Find Per Influencer</Typography>
-                            <CustomTextField fullWidth id="outlined-basic" label="Outlined" variant="outlined" size={'small'} /><br/>
+                            <CustomTextField fullWidth id="outlined-basic" placeholder="10" variant="outlined" size={'small'} /><br/>
                             <Typography variant="caption" mb={1}>Set up to 0 to skip product research</Typography>
                         </Box>
                         <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
@@ -276,7 +322,7 @@ const ResearchForm = () => {
                                 <Typography variant="caption" >Cross-reference claims with scientific literature</Typography>
                             </Box>
                                 <FormControlLabel
-                                    control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
+                                    control={<IOSSwitch sx={{ m: 1 }} defaultChecked onChange={handleChangeVerifyClaims} value={verifyClaims} />}
                                     label=""
                                 />
                         </Box>
@@ -286,23 +332,27 @@ const ResearchForm = () => {
                 <Box mb={2}>
                     <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
                         <Typography>Specific Journals</Typography>
-                        <Box sx={{display: 'flex', alignItems: 'center', color: 'secondary.light'}}>
-                            <Button sx={{color: 'secondary.light', textTransform: 'capitalize'}}>Select All</Button>
-                            <span>|</span>
-                            <Button sx={{color: 'secondary.light', textTransform: 'capitalize'}}>Deselect All</Button>
+                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                            <Button onClick={() => selectAllJournals()} sx={{color: 'secondary.light', textTransform: 'capitalize'}}>Select All</Button>
+                            <span style={{opacity: '0.3'}}>|</span>
+                            <Button onClick={() => deselectAllJournals()} sx={{color: 'secondary.light', textTransform: 'capitalize'}}>Deselect All</Button>
                         </Box>
                     </Box>
                     <Grid2 container spacing={1} mb={2}>
 
                         {journals.map((journal, index) => (
                             <Grid2 key={journal.name} size={6}>
-                                <StyledButton
+                                <StyledButtonJournal
                                     active={journal.selected}
                                     onClick={() => toggleJournalSelection(index)}
                                     fullWidth
                                 >
-                                    {journal.name}
-                                </StyledButton>
+                                    <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%'}}>
+                                       <Typography sx={{fontSize: '14px'}}>{journal.name}</Typography> 
+                                       <Box sx={{width: '10px', height: '10px', background: journal.selected ? '#41c79a' : BORDER_BOX_GREY, borderRadius: '50%'}}></Box>
+
+                                    </Box>
+                                </StyledButtonJournal>
                             </Grid2>
                         ))}
                     
@@ -329,11 +379,13 @@ const ResearchForm = () => {
                 </Box>
 
                 <Box mb={3}>
-                    <Typography>Notes for Research Assistant</Typography>
+                    <Typography mb={1} >Notes for Research Assistant</Typography>
                     <CustomTextField
                         placeholder="Comments"
                         multiline
                         rows={5}
+                        value={notesForAssistant}
+                        onChange={(ele) => setNotesForAssistant(ele.target.value)}
                         variant="outlined"
                         fullWidth
                         sx={{
@@ -348,14 +400,14 @@ const ResearchForm = () => {
                     />
                 </Box>
 
-                <Box>
-                    <Button  type="submit" sx={{color: 'secondary.light', textTransform: 'capitalize', marginLeft: 'auto'}} variant="contained">
+                <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
+                    <Button type="submit" sx={{color: 'white', textTransform: 'capitalize', marginLeft: 'auto', background: 'secondary.light'}} variant="contained">
                         { loading ? 'Loading' : '+ Start Research' }
                     </Button>
                 </Box>
             </Box>
 
-            {JSON.stringify(messages)}
+            {/* {JSON.stringify(messages)} */}
         </form>
     )
 }

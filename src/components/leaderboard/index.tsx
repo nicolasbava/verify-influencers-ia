@@ -1,6 +1,9 @@
 import { Box, Typography } from "@mui/material";
 import InfoBoxes from "./InfoBoxes";
 import BasicTable from "./Table";
+import { useEffect, useState } from "react";
+import { fetchPagedData } from "../../api/firebase";
+import { HealthInfluencerVerified } from "../../interfaces/Research";
 
 export interface Influencer {
     rank: number;
@@ -80,12 +83,30 @@ const influencers: Influencer[] = [
 ];
 
 const LeaderBoardComponent = () => {
+    const [leaderBoardData, setLeaderBoardData] = useState<Influencer[]>([]);
+    const [lastDoc, setLastDoc] = useState(null);
+  
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const pageSize = 10;
+          const { data, lastVisible } = await fetchPagedData(pageSize, lastDoc);
+          console.log('data: ', data)
+          setLeaderBoardData(data); // Update the state with the fetched data
+          setLastDoc(lastVisible); // Update the last document for pagination
+        } catch (error) {
+          console.error("Error fetching leaderboard data: ", error);
+        }
+      };
+  
+      fetchData(); // Call the async function
+    }, []);
     return (
         <Box mb={2}>
-            <Typography mb={2} sx={{fontWeight: 'bold', fontSize: '39px'}}>Influencer Trust Leaderboard</Typography>
+            <Typography mb={1} sx={{fontWeight: 'bold', fontSize: '39px'}}>Influencer Trust Leaderboard</Typography>
             <Typography mb={4} variant="body1" sx={{color: '#f9f9f98f', maxWidth: {xs: '100%', md: '60%'}}}>Real-time rankings of health influencers based on scientific accuracy, credibility, and transparency. Updated daily using AI-powered analysis.</Typography>
             <InfoBoxes />
-            <BasicTable data={influencers} />
+            <BasicTable data={leaderBoardData} />
         </Box>
     )
 };

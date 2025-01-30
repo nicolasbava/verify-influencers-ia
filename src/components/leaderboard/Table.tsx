@@ -7,6 +7,8 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Box, Button, styled } from '@mui/material';
 import theme from '../../theme';
+import { getStatusColor } from '../../utils';
+import SyncAltOutlinedIcon from '@mui/icons-material/SyncAltOutlined';
 
 export interface Influencer {
     rank: number;
@@ -27,66 +29,65 @@ const ButtonGreen = styled(Button)(() => ({
 }));
 
 const TableCellCustom = styled(TableCell)(() => ({
-    // padding: '4px 12px',
-    // textTransform: 'capitalize',
-    // borderRadius: '25px',
-    // background: '#0ea06f',
-    textTransform: 'uppercase',
-
-    color: 'white'
+    fontSize: '12px',
+    color: 'white',
+    borderBottom: '1px solid grey',
+    textTransform: 'uppercase'
 }));
 
-// const TableCellHeadCustom = styled(TableCell)(() => ({
-//     // padding: '4px 12px',
-//     // textTransform: 'capitalize',
-//     // borderRadius: '25px',
-//     // background: '#0ea06f',
-//     color: 'white'
-// }));
+
+const TableCellCustomInfo = styled(TableCell)(() => ({
+    fontSize: '14px',
+    color: 'white',
+    borderBottom: '1px solid grey',
+    textTransform: 'capitalize'
+}));
+
 
 export default function BasicTable({data}: {data : Influencer[]}) {
-  return (
-    <>
-        <Box sx={{display: 'flex', alignItems: 'center', mb: 3, justifyContent: 'space-between'}}>
-            <Box sx={{display: 'flex', alignItems: 'center', }}>
-                <ButtonGreen>All</ButtonGreen>
+    
+     return (
+        <>
+            <Box sx={{display: 'flex', alignItems: 'center', mb: 3, justifyContent: 'space-between'}}>
+                <Box sx={{display: 'flex', alignItems: 'center', }}>
+                    <ButtonGreen>All</ButtonGreen>
+                </Box>
+                <Button variant='contained' sx={{color: 'white', textTransform: 'capitalize', borderRadius: '9px'}} startIcon={<SyncAltOutlinedIcon sx={{transform: 'rotate(90deg)'}}/>}>Highest first</Button>
             </Box>
-            <Button variant='contained' sx={{color: 'white'}}>Highest first</Button>
-        </Box>
-   
-        <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650, background: theme.palette.primary.light, color: 'white', border: '1px solid white', }} aria-label="simple table">
-            <TableHead sx={{background: '#1d2839'}}>
-                <TableRow sx={{color: '#ffffffa1'}}>
-                    <TableCellCustom>Rank</TableCellCustom>
-                    <TableCellCustom >Influencer</TableCellCustom>
-                    <TableCellCustom >Category</TableCellCustom>
-                    <TableCellCustom >Trust Score</TableCellCustom>
-                    <TableCellCustom >Trend</TableCellCustom>
-                    <TableCellCustom >Followers</TableCellCustom>
-                    <TableCellCustom >Verified Claims</TableCellCustom>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-            {data.map((row : Influencer) => (
-                <TableRow
-                    key={row.name}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                >
-                    <TableCellCustom component="th" scope="row">
-                        #{row.rank}
-                    </TableCellCustom>
-                    <TableCellCustom>{row.name}</TableCellCustom>
-                    <TableCellCustom>{row.category}</TableCellCustom>
-                    <TableCellCustom>{row.trustScore}</TableCellCustom>
-                    <TableCellCustom>{row.trend}</TableCellCustom>
-                    <TableCellCustom>{row.followers}</TableCellCustom>
-                    <TableCellCustom>{row.verifiedClaims}</TableCellCustom>
-                </TableRow>
-            ))}
-            </TableBody>
-        </Table>
-        </TableContainer>
-    </>
+    
+            <TableContainer component={Paper} sx={{ borderRadius: '14px 14px 9px 9px'}}>
+            <Table sx={{ minWidth: 650, background: theme.palette.primary.light, color: 'white', border: '1px solid grey', }} aria-label="simple table">
+                <TableHead sx={{background: '#1d2839'}}>
+                    <TableRow sx={{color: '#ffffffa1'}}>
+                        <TableCellCustom>Rank</TableCellCustom>
+                        <TableCellCustom >Influencer</TableCellCustom>
+                        <TableCellCustom >Category</TableCellCustom>
+                        <TableCellCustom >Trust Score</TableCellCustom>
+                        <TableCellCustom >Trend</TableCellCustom>
+                        <TableCellCustom >Followers</TableCellCustom>
+                        <TableCellCustom >Verified Claims</TableCellCustom>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                {data.map((row : Influencer, key: number) => (
+                    <TableRow
+                        key={row.name + key}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                        <TableCellCustomInfo component="th" scope="row">
+                            #{row.rank}
+                        </TableCellCustomInfo>
+                        <TableCellCustomInfo>{row.name}</TableCellCustomInfo>
+                        <TableCellCustomInfo>{row.category}</TableCellCustomInfo>
+                        <TableCellCustomInfo sx={{fontWeight: 'bold', color: getStatusColor(Number(row.trustScore))}}>{row.trustScore}</TableCellCustomInfo>
+                        <TableCellCustomInfo>{row.trend}</TableCellCustomInfo>
+                        <TableCellCustomInfo>{row.followers}</TableCellCustomInfo>
+                        <TableCellCustomInfo>{row.verifiedClaims}</TableCellCustomInfo>
+                    </TableRow>
+                ))}
+                </TableBody>
+            </Table>
+            </TableContainer>
+        </>
   );
 }
