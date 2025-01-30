@@ -22,6 +22,7 @@ export type Claim = ClaimIncomplete & {
     status: string
     verifyLinkReference: string,
     category: string,
+    resume: string
 }
 
 export interface ChatCompletionRequest {

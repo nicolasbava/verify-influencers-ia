@@ -94,6 +94,7 @@ const verifyClaimsWithJournals = async (
         - Return a JSON object with the following structure:
         - As claim status use only "Verified", "Debunked" or "Questionable"
         - Keep the info of url and date inside every claim as it is passed, that data main remain the same
+        - Add a new key 'resume' inside each claim to explain why it is considered "Verified", "Debunked", or "Questionable"
         
         **Strict JSON Format (No explanations, markdown, or additional text):**  
         
@@ -113,7 +114,8 @@ const verifyClaimsWithJournals = async (
               "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pubmed/XXXXX",
               "category": "Nature",
               "url": "https://url.com/kjfkñla",
-              "date": "01-12-1992"
+              "date": "01-12-1992",
+              "resume": "This claim is verified based on evidence from a peer-reviewed study published in a trusted journal."
             },
             { 
               "id": "jfkdañ-12ñklfda-23ñk",
@@ -123,7 +125,8 @@ const verifyClaimsWithJournals = async (
               "verifyLinkReference": "https://www.nature.com/articles/YYYYY",
               "category": "Performance",
               "url": "https://url.com/kjfkñla",
-              "date": "01-12-1992"
+              "date": "01-12-1992",
+              "resume": "This claim is verified based on evidence from a peer-reviewed study published in a trusted journal."
             },
             { 
               "id": "jfkdañ-12ñklfda-23ñk",
@@ -133,7 +136,8 @@ const verifyClaimsWithJournals = async (
               "verifyLinkReference": "https://www.sciencedirect.com/science/article/ZZZZZ",
               "category": "Sleep",
               "url": "https://url.com/kjfkñla",
-              "date": "01-12-1992"
+              "date": "01-12-1992",
+              "resume": "This claim is verified based on evidence from a peer-reviewed study published in a trusted journal."
             }
           ]
         }

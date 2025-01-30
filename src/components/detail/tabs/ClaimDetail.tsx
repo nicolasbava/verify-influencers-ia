@@ -92,7 +92,7 @@ const ClaimDetail = ({ claim }: ClaimDetailProps) => {
                         />
                         <Typography sx={{fontWeight: 'bold'}} >AI Analisys</Typography>
                     </Box>
-                    <Typography  mb={1} sx={{color: '#ffffff80'}} >Multiple studies confirm that..</Typography>
+                    <Typography  mb={1} sx={{color: '#ffffff80', maxWidth: '60%'}} >{claim.resume}</Typography>
                     <Link to={claim.verifyLinkReference} target='_blank'>
                         <Box sx={{display: 'flex', alignItems: 'center'}}>
                             <Typography sx={{color: 'secondary.light'}}>View Research</Typography>
