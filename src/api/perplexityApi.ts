@@ -2,6 +2,7 @@ import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 import { ChatCompletionResponse, HealthInfluencer, HealthInfluencerVerified, Journal, Message } from "../interfaces/Research";
 import axios from "axios";
+import { calculateTotalTrustScore, getUniqueCategories } from "../utils";
 
 const generateId = () => crypto.randomUUID();
 
@@ -95,6 +96,8 @@ const verifyClaimsWithJournals = async (
         - Bio: ${research.biography}  
         - Followers: ${research.qFollowers}  
         - Yearly Revenue: $${research.yearlyRevenue}  
+        - Category: ${research.category}
+        
         
         **Claims to Evaluate:**  
         ${research.claims.map((claim, index) => `- ${index + 1}. ${JSON.stringify(claim)}`).join("\n")}
@@ -113,6 +116,7 @@ const verifyClaimsWithJournals = async (
           "biography": "${research.biography}",
           "qFollowers": ${research.qFollowers},
           "yearlyRevenue": ${research.yearlyRevenue},
+          "category": ${research.category},
           "claims": [
             { 
               "id": "jfkdañ-12ñklfda-23ñk",
@@ -281,8 +285,13 @@ export const executeResearchAndVerify = async (messages: Message[], journals: Jo
     try{
       const verifyResearch = await verifyClaimsWithJournals(researchFromIA, journals, apiKey);
       const parsedResponse : HealthInfluencerVerified = JSON.parse(verifyResearch.data.choices[0].message.content)
-      await saveInfo(parsedResponse);
-      return parsedResponse
+      const calculateTotalResults : HealthInfluencerVerified = {
+          ...parsedResponse,
+          totalTrustPercentage: calculateTotalTrustScore(parsedResponse.claims),
+          categories: getUniqueCategories(parsedResponse.claims),
+      }
+      await saveInfo(calculateTotalResults);
+      return calculateTotalResults
 
     } catch (error){
       

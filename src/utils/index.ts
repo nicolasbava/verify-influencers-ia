@@ -25,9 +25,9 @@ export const getUniqueCategories = (claims: Claim[]): string[] => {
 };
 
 export const getStatusColor = (number: number): string => {
-    if (number >= 66 && number <= 100) {
+    if (number >= 90 && number <= 100) {
       return '#34d097';
-    } else if (number >= 33 && number < 66) {
+    } else if (number >= 33 && number < 89) {
       return '#f7ca14';
     } else if (number >= 0 && number < 33) {
       return '#f23838';

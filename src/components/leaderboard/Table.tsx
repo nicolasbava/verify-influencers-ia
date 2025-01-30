@@ -7,12 +7,13 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Box, Button, styled } from '@mui/material';
 import theme from '../../theme';
-import { getStatusColor } from '../../utils';
+import { formatRevenue, getStatusColor } from '../../utils';
 import SyncAltOutlinedIcon from '@mui/icons-material/SyncAltOutlined';
+import { HealthInfluencerVerified } from '../../interfaces/Research';
 
 export interface Influencer {
-    rank: number;
     name: string;
+    totalTrustPercentage: number;
     category: string;
     trustScore: string;
     trend: string;
@@ -44,7 +45,7 @@ const TableCellCustomInfo = styled(TableCell)(() => ({
 }));
 
 
-export default function BasicTable({data}: {data : Influencer[]}) {
+export default function BasicTable({data}: {data : HealthInfluencerVerified[]}) {
     
      return (
         <>
@@ -69,20 +70,20 @@ export default function BasicTable({data}: {data : Influencer[]}) {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                {data.map((row : Influencer, key: number) => (
+                {data.map((row : HealthInfluencerVerified, key: number) => (
                     <TableRow
                         key={row.name + key}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                         <TableCellCustomInfo component="th" scope="row">
-                            #{row.rank}
+                            #{key + 1}
                         </TableCellCustomInfo>
                         <TableCellCustomInfo>{row.name}</TableCellCustomInfo>
                         <TableCellCustomInfo>{row.category}</TableCellCustomInfo>
-                        <TableCellCustomInfo sx={{fontWeight: 'bold', color: getStatusColor(Number(row.trustScore))}}>{row.trustScore}</TableCellCustomInfo>
-                        <TableCellCustomInfo>{row.trend}</TableCellCustomInfo>
-                        <TableCellCustomInfo>{row.followers}</TableCellCustomInfo>
-                        <TableCellCustomInfo>{row.verifiedClaims}</TableCellCustomInfo>
+                        <TableCellCustomInfo sx={{fontWeight: 'bold', color: getStatusColor(Number(row.totalTrustPercentage))}}>{row.totalTrustPercentage}%</TableCellCustomInfo>
+                        <TableCellCustomInfo>?</TableCellCustomInfo>
+                        <TableCellCustomInfo>{formatRevenue(row.qFollowers)}+</TableCellCustomInfo>
+                        <TableCellCustomInfo>241</TableCellCustomInfo>
                     </TableRow>
                 ))}
                 </TableBody>

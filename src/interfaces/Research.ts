@@ -51,9 +51,10 @@ export interface HealthInfluencerVerified {
     id: string,
     claims: Claim[],
     biography: string,
-    qFollowers?: number
+    qFollowers: number
     yearlyRevenue?: number
     totalTrustPercentage?: number,
-    categories?: string[]
+    categories?: string[],
+    category?: string
 
 }

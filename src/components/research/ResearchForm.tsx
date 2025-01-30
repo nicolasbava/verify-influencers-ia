@@ -5,11 +5,10 @@ import { styled } from "@mui/system";
 import { useState } from "react";
 import { IOSSwitch } from "../../utils/iosSwitch";
 import { executeResearchAndVerify } from "../../api/perplexityApi";
-import { HealthInfluencerVerified, Message } from "../../interfaces/Research";
+import { Message } from "../../interfaces/Research";
 import { useResearchContext } from "../../context/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { CustomTextField } from "../styled";
-import { calculateTotalTrustScore, getUniqueCategories } from "../../utils";
 import SearchIcon from "@mui/icons-material/Search";
 
 const BORDER_BOX = '#41c79a6b';
@@ -62,7 +61,7 @@ enum TimeRange {
 
 const generateSystemMessage = (includeRevenueAnalysis: boolean, timeRange: TimeRange, qMaxClaims: number): string => {
     const basePrompt =
-        "You are an AI that searches health claims in tweets and podcast transcripts of health influencers. Provide the result in JSON format with the following structure: { img: (url to a profile image of the health influencer), name, biography (max 75 words), claims (array of object, which the object has {text: (string with the claim), date: (string with the date of the claim as dd-mm-yyy), url: (string with the url to see where the claim was found)}), qFollowers: (number total followers in all social media), category: (string with a category about what the doctor do, Nature, Medicine, Performance, Neuroscientist, etc)";
+        "You are an AI that searches health claims in tweets and podcast transcripts of health influencers. Provide the result in JSON format with the following structure: { img: (url to a profile image of the health influencer), name, biography (max 75 words), claims (array of object, which the object has {text: (string with the claim), date: (string with the date of the claim as dd-mm-yyy), url: (string with the url to see where the claim was found)}), qFollowers: (number total followers in all social media), category: (The influencer’s professional field, e.g., 'Nature', 'Medicine', 'Fitness', 'Neuroscience', etc.)";
 
     const revenuePrompt = includeRevenueAnalysis
         ? ", yearlyRevenue: (number in USD)"
@@ -143,24 +142,19 @@ const ResearchForm = () => {
             { role: "user", content: `Search for claims of ${userInput}. ${notesForAssistant.length > 0 ? 'Notes added by the user: ' 
                 + notesForAssistant : ''}` },
         ];
-        // setMessages(payload);
         setLoading(true);
 
         try {
+            
             const result = await executeResearchAndVerify(payload, journals, verifyClaims, apiKey);
-            // setResponses((prev) => [...prev, result.choices[0].message.content]);
-            // setMessages((prev) => [
-            //     ...prev,
-            //     { role: "assistant", content: result.choices[0].message.content },
-            // ]);
             if(!result) throw new Error('problem with research result')
-                
-            const calculateTotalResults : HealthInfluencerVerified = {
-                ...result,
-                totalTrustPercentage: calculateTotalTrustScore(result.claims),
-                categories: getUniqueCategories(result.claims)
-            }
-            setResearchResponse(calculateTotalResults)
+            // const calculateTotalResults : HealthInfluencerVerified = {
+            //     ...result,
+            //     totalTrustPercentage: calculateTotalTrustScore(result.claims),
+            //     categories: getUniqueCategories(result.claims),
+            //     category: ''
+            // }
+            setResearchResponse(result)
         } catch (error) {
             console.error("Error:", error);
         } finally {

@@ -3,6 +3,7 @@ import InfoBoxes from "./InfoBoxes";
 import BasicTable from "./Table";
 import { useEffect, useState } from "react";
 import { fetchPagedData } from "../../api/firebase";
+import { HealthInfluencerVerified } from "../../interfaces/Research";
 
 export interface Influencer {
     rank: number;
@@ -83,7 +84,7 @@ export interface Influencer {
 // ];
 
 const LeaderBoardComponent = () => {
-    const [leaderBoardData, setLeaderBoardData] = useState<Influencer[]>([]);
+    const [leaderBoardData, setLeaderBoardData] = useState<HealthInfluencerVerified[]>([]);
     const [lastDoc] = useState(null);
   
     useEffect(() => {
@@ -92,7 +93,7 @@ const LeaderBoardComponent = () => {
           const pageSize = 10;
           const { data }  = await fetchPagedData(pageSize, lastDoc);
           console.log('data: ', data)
-          setLeaderBoardData(data as Influencer[]);
+          setLeaderBoardData(data as HealthInfluencerVerified[]);
         } catch (error) {
           console.error("Error fetching leaderboard data: ", error);
         }

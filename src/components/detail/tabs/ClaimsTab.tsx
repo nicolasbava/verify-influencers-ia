@@ -12,7 +12,7 @@ const ButtonGreen = styled(Button)<{active: boolean}>(({active}) => ({
     padding: '4px 12px',
     textTransform: 'capitalize',
     borderRadius: '25px',
-    backgroundColor: active ? theme.palette.secondary.light : '#279671',
+    backgroundColor: active ? '#279671':  theme.palette.primary.light,
     border: active ? `1px solid #096e4d` :`1px solid grey`,
 }));
 
