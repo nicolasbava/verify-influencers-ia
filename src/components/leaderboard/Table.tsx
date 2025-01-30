@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,20 +9,11 @@ import Paper from '@mui/material/Paper';
 import { Box, Button, styled } from '@mui/material';
 import theme from '../../theme';
 import { formatRevenue, getStatusColor } from '../../utils';
-import SyncAltOutlinedIcon from '@mui/icons-material/SyncAltOutlined';
 import { HealthInfluencerVerified } from '../../interfaces/Research';
 import { useNavigate } from 'react-router-dom'; // For redirection
 import { useResearchContext } from '../../context/GlobalContext';
 import MovingIcon from '@mui/icons-material/Moving';
-export interface Influencer {
-    name: string;
-    totalTrustPercentage: number;
-    category: string;
-    trustScore: string;
-    trend: string;
-    followers: string;
-    verifiedClaims: number;
-}
+import VerticalAlignBottomOutlinedIcon from '@mui/icons-material/VerticalAlignBottomOutlined';
 
 const ButtonGreen = styled(Button)(() => ({
     padding: '4px 12px',
@@ -48,11 +40,25 @@ const TableCellCustomInfo = styled(TableCell)(() => ({
 export default function BasicTable({ data }: { data: HealthInfluencerVerified[] }) {
     const { setResearchResponse } = useResearchContext();
     const navigate = useNavigate();
+    const [sortAsc, setSortAsc] = useState<boolean>(true); // State to toggle sorting order
+
+    // Sort the data based on totalTrustPercentage
+    const sortedData = [...data].sort((a, b) => {
+        if(!a.totalTrustPercentage && !b.totalTrustPercentage) throw new Error('Problem with total Percentage sort table')
+        return sortAsc
+            ? a.totalTrustPercentage - b.totalTrustPercentage
+            : b.totalTrustPercentage - a.totalTrustPercentage;
+    });
 
     const handleRowClick = (row: HealthInfluencerVerified) => {
         setResearchResponse({} as HealthInfluencerVerified);
         setResearchResponse(row);
         navigate('/detail');
+    };
+
+    // Toggle sort order on button click
+    const handleSortToggle = () => {
+        setSortAsc(!sortAsc); // Toggle the state to switch the sort order
     };
 
     return (
@@ -62,11 +68,12 @@ export default function BasicTable({ data }: { data: HealthInfluencerVerified[] 
                     <ButtonGreen>All</ButtonGreen>
                 </Box>
                 <Button
-                    variant='contained'
+                    variant="contained"
                     sx={{ color: 'white', textTransform: 'capitalize', borderRadius: '9px' }}
-                    startIcon={<SyncAltOutlinedIcon sx={{ transform: 'rotate(90deg)' }} />}
+                    startIcon={<VerticalAlignBottomOutlinedIcon sx={{  transform: sortAsc ? 'rotate(0deg)' : 'rotate(180deg)'}} />}
+                    onClick={handleSortToggle} // Sort on button click
                 >
-                    Highest first
+                    {sortAsc ? 'Highest first' : 'Lowest first'}
                 </Button>
             </Box>
 
@@ -84,7 +91,7 @@ export default function BasicTable({ data }: { data: HealthInfluencerVerified[] 
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data.map((row: HealthInfluencerVerified, key: number) => (
+                        {sortedData.map((row: HealthInfluencerVerified, key: number) => (
                             <TableRow
                                 key={row.name + key}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}

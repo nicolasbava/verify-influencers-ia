@@ -53,7 +53,7 @@ export interface HealthInfluencerVerified {
     biography: string,
     qFollowers: number
     yearlyRevenue?: number
-    totalTrustPercentage?: number,
+    totalTrustPercentage: number,
     categories?: string[],
     category?: string
 
