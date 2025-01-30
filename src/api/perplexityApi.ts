@@ -17,7 +17,8 @@ const transformClaims = (data : HealthInfluencerVerified) : HealthInfluencerVeri
       trustScore: 0,
       status: 'Debunked',
       category: "none",
-      verifyLinkReference: ''
+      verifyLinkReference: '',
+      resume: ''
     })),
   };
 };
