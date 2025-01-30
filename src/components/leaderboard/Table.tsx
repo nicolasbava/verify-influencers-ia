@@ -40,7 +40,7 @@ const TableCellCustomInfo = styled(TableCell)(() => ({
 export default function BasicTable({ data }: { data: HealthInfluencerVerified[] }) {
     const { setResearchResponse } = useResearchContext();
     const navigate = useNavigate();
-    const [sortAsc, setSortAsc] = useState<boolean>(true); // State to toggle sorting order
+    const [sortAsc, setSortAsc] = useState<boolean>(false); // State to toggle sorting order
 
     // Sort the data based on totalTrustPercentage
     const sortedData = [...data].sort((a, b) => {
@@ -70,10 +70,10 @@ export default function BasicTable({ data }: { data: HealthInfluencerVerified[] 
                 <Button
                     variant="contained"
                     sx={{ color: 'white', textTransform: 'capitalize', borderRadius: '9px' }}
-                    startIcon={<VerticalAlignBottomOutlinedIcon sx={{  transform: sortAsc ? 'rotate(0deg)' : 'rotate(180deg)'}} />}
+                    startIcon={<VerticalAlignBottomOutlinedIcon sx={{  transform: sortAsc ? 'rotate(180deg)'  :  'rotate(0deg)'}} />}
                     onClick={handleSortToggle} // Sort on button click
                 >
-                    {sortAsc ? 'Highest first' : 'Lowest first'}
+                    {sortAsc ? 'Lowest first' :  'Highest first'}
                 </Button>
             </Box>
 

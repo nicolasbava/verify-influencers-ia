@@ -11,15 +11,13 @@ import { BrowserRouter } from 'react-router-dom';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-          <BrowserRouter>
-    
-    <ResearchProvider>
-      <ThemeProvider theme={theme}>   
-        <CssBaseline />
-            <App />
-      </ThemeProvider>
-    </ResearchProvider>
+    <BrowserRouter>
+      <ResearchProvider>
+        <ThemeProvider theme={theme}>   
+          <CssBaseline />
+              <App />
+        </ThemeProvider>
+      </ResearchProvider>
     </BrowserRouter>
-
   </StrictMode>,
 )
