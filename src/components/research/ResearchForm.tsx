@@ -62,7 +62,7 @@ enum TimeRange {
 
 const generateSystemMessage = (includeRevenueAnalysis: boolean, timeRange: TimeRange, qMaxClaims: number): string => {
     const basePrompt =
-        "You are an AI that searches health claims in tweets and podcast transcripts of health influencers. Provide the result in JSON format with the following structure: { name, biography (max 75 words), claims (array of strings), qFollowers: (number total followers in all social media)";
+        "You are an AI that searches health claims in tweets and podcast transcripts of health influencers. Provide the result in JSON format with the following structure: { img: (url to a profile image of the health influencer), name, biography (max 75 words), claims (array of object, which the object has {text: (string with the claim), date: (string with the date of the claim as dd-mm-yyy), url: (string with the url to see where the claim was found)}), qFollowers: (number total followers in all social media), category: (string with a category about what the doctor do, Nature, Medicine, Performance, Neuroscientist, etc)";
 
     const revenuePrompt = includeRevenueAnalysis
         ? ", yearlyRevenue: (number in USD)"

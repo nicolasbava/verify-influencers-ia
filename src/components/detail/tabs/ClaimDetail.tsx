@@ -3,6 +3,7 @@ import { Claim } from "../../../interfaces/Research";
 import { getStatusColor } from "../../../utils";
 import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import { Link } from "react-router-dom";
+import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 interface ClaimDetailProps {
     claim: Claim;
 }
@@ -41,7 +42,8 @@ const StatusTypography = styled(Typography)<{ trustStatus: number }>(({ trustSta
 
 
 const ImgIcon = styled('img')(() => ({
-    width: '25px',
+    width: '19px',
+    height: 'auto',
 
 }));
 
@@ -58,6 +60,10 @@ const ClaimDetail = ({ claim }: ClaimDetailProps) => {
                 <Box  sx={{display: 'flex', alignItems: 'center',}}>
                     <Box sx={{background: '#ffffff26', width: '23px', borderRadius: '25px', height: '10px', mr: 2, opacity: '0.3'}}></Box>
                     <TypographyCustom status={claim.status}>{claim.status}</TypographyCustom>
+                    <Box display={'flex'} alignItems={'center'} gap={1} sx={{ml: 2}}>
+                        <CalendarTodayOutlinedIcon sx={{color:'grey', fontSize: '18px'}} />
+                        <Typography sx={{color: 'grey', mt: '3px', fontSize: '13px', fontWeight: 'bold'}}>{claim.date}</Typography>
+                    </Box>
                 </Box>
                 <Box sx={{textAlign: 'right'}} >
                     <StatusTypography trustStatus={claim.trustScore} >{claim.trustScore}%</StatusTypography>
@@ -69,10 +75,12 @@ const ClaimDetail = ({ claim }: ClaimDetailProps) => {
                 <Box  mb={2}>
                     <Typography mb={1} sx={{fontWeight: 'bold', fontSize: '18px'}} >{claim.text}</Typography>
                     <Link to='/' target="_blank">
-                        <Box sx={{display: 'flex', alignItems: 'center'}}>
-                                <Typography sx={{color: 'secondary.light'}} >View source </Typography>
-                                <OpenInNewOutlinedIcon sx={{fontSize: '15px', color: 'secondary.light', ml: 1, mt:'2px'}} />
-                        </Box>
+                        <Link to={claim.url} target={'_blank'}>
+                            <Box sx={{display: 'flex', alignItems: 'center'}}>
+                                    <Typography sx={{color: 'secondary.light'}} >View source </Typography>
+                                    <OpenInNewOutlinedIcon sx={{fontSize: '15px', color: 'secondary.light', ml: 1, mt:'2px'}} />
+                            </Box>
+                        </Link>
                     </Link>
                 </Box>
                 <Box ml={4} mb={4}>

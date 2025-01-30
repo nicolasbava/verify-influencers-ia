@@ -10,7 +10,9 @@ const transformClaims = (data : HealthInfluencer) : HealthInfluencerVerified => 
     ...data,
     claims: data.claims.map((claim) => ({
       id: generateId(),
-      text: claim,
+      text: claim.text,
+      url: claim.url,
+      date: claim.date,
       trustScore: 0,
       status: 'Debunked',
       category: "none",
@@ -102,9 +104,10 @@ const verifyClaimsWithJournals = async (
         - Search for evidence in the selected journals.  
         - Return a JSON object with the following structure:
         - As claim status use only "Verified", "Debunked" or "Questionable"
+        - Keep the info of url and date inside every claim as it is passed, that data main remain the same
         
         **Strict JSON Format (No explanations, markdown, or additional text):**  
-        \`\`\`json
+        
         {
           "id": "generated_id",
           "name": "${research.name}",
@@ -118,7 +121,9 @@ const verifyClaimsWithJournals = async (
               "trustScore": 85, 
               "status": "Verified",
               "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pubmed/XXXXX",
-              "category": "Nature"
+              "category": "Nature",
+              "url": "https://url.com/kjfkñla",
+              "date": "01-12-1992"
             },
             { 
               "id": "jfkdañ-12ñklfda-23ñk",
@@ -126,7 +131,9 @@ const verifyClaimsWithJournals = async (
               "trustScore": 75, 
               "status": "Debunked",
               "verifyLinkReference": "https://www.nature.com/articles/YYYYY",
-              "category": "Performance"
+              "category": "Performance",
+              "url": "https://url.com/kjfkñla",
+              "date": "01-12-1992"
             },
             { 
               "id": "jfkdañ-12ñklfda-23ñk",
@@ -134,11 +141,13 @@ const verifyClaimsWithJournals = async (
               "trustScore": 40, 
               "status": "Questionable",
               "verifyLinkReference": "https://www.sciencedirect.com/science/article/ZZZZZ",
-              "category": "Sleep"
+              "category": "Sleep",
+              "url": "https://url.com/kjfkñla",
+              "date": "01-12-1992"
             }
           ]
         }
-        \`\`\`
+        
         
         ${processJournals(journals)}
         `,
@@ -242,6 +251,31 @@ export const fetchDataFromIA = async (
     }
   }
 };
+
+const responseNew = {
+  "img": "https://example.com/andrew_huberman.jpg",
+  "name": "Andrew Huberman",
+  "biography": "Andrew Huberman is a Stanford University neuroscientist and popular podcaster known for his work on neuroscience and human performance. He hosts the Huberman Lab podcast, discussing scientific research on various health topics.",
+  "claims": [
+    {
+      "text": "Fasting will increase testosterone levels",
+      "date": "27-03-2024",
+      "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
+    },
+    {
+      "text": "Extended fasting will increase growth hormone levels",
+      "date": "27-03-2024",
+      "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
+    },
+    {
+      "text": "Exercising as if being chased with a syringe full of poison can enhance performance",
+      "date": "27-03-2024",
+      "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
+    }
+  ],
+  "qFollowers": 6100000,
+  "category": "Neuroscientist"
+}
 
 export const executeResearchAndVerify = async (messages: Message[], journals: Journal[], verifyClaims: boolean) => {
   try {
@@ -362,3 +396,46 @@ export const executeResearchAndVerify = async (messages: Message[], journals: Jo
 //       }
 //   ]
 // }
+
+
+// ```json
+// {
+//   "id": "huberman_analysis_20250130",
+//   "name": "Andrew Huberman",
+//   "biography": "Andrew Huberman is a Stanford University neuroscientist and popular podcaster known for his work on brain development, brain plasticity, and neural regeneration and repair. He hosts the Huberman Lab podcast, discussing neuroscience and science-based tools for everyday life.",
+//   "qFollowers": 6100000,
+//   "yearlyRevenue": 5000000,
+//   "claims": [
+//     {
+//       "id": "d9f24a0b-2a87-4a35-9b1d-12e73dc50ea5",
+//       "text": "Eating a bowl of rice is the same as having a bowl of sugar",
+//       "trustScore": 20,
+//       "status": "Debunked",
+//       "verifyLinkReference": "https://www.nature.com/articles/s41430-018-0242-7",
+//       "category": "Nutrition",
+//       "url": "https://www.youtube.com/watch?v=HMLlzd5wwEo",
+//       "date": "28-04-2023"
+//     },
+//     {
+//       "id": "9af4c926-8b87-4ffa-a505-b5b0d7328055", 
+//       "text": "Viewing sunlight within 30-60 minutes of waking enhances cortisol release",
+//       "trustScore": 60,
+//       "status": "Questionable",
+//       "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6751071/",
+//       "category": "Circadian Rhythm",
+//       "url": "https://unfilteredonline.com/huberman-on-trial-examining-the-evidence/",
+//       "date": "15-04-2024"
+//     },
+//     {
+//       "id": "48396dc6-a2a0-4795-9157-e40d067a939d",
+//       "text": "You get a 2,000% increase in dopamine from certain activities",
+//       "trustScore": 30,
+//       "status": "Debunked",
+//       "verifyLinkReference": "https://www.nature.com/articles/s41386-019-0564-9",
+//       "category": "Neuroscience",
+//       "url": "https://unfilteredonline.com/huberman-on-trial-examining-the-evidence/",
+//       "date": "15-04-2024"
+//     }
+//   ]
+// }
+// ```

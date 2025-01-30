@@ -8,13 +8,20 @@ export interface Journal {
     selected: boolean
 }
 
-export type Claim = {
-    id: string,
+export type ClaimIncomplete = {
     text: string,
+    url: string,
+    date: string
+}
+
+
+export type Claim = ClaimIncomplete & {
+    id: string,
+    // text: string,
     trustScore: number,
     status: string
     verifyLinkReference: string,
-    category: string
+    category: string,
 }
 
 export interface ChatCompletionRequest {
@@ -26,12 +33,13 @@ export interface ChatCompletionResponse {
     choices: {
       message: Message;
     }[];
-  }
+}
+
 
 export interface HealthInfluencer { 
     name: string,
     id: string,
-    claims: string[],
+    claims: ClaimIncomplete[],
     biography: string,
     qFollowers?: number,
     yearlyRevenue?: number,

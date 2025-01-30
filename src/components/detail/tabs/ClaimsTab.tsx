@@ -35,9 +35,118 @@ interface Status {
 
 const ClaimsTab = () => {
     const { researchResponse } = useResearchContext();
-    const [influencerData, setInfluencerData] = useState<HealthInfluencerVerified | null>(null)
+    const [influencerData, setInfluencerData] = useState<HealthInfluencerVerified | null>({
+        "id": "huberman_2024_01",
+        "name": "Andrew Huberman",
+        "biography": "Andrew Huberman is a neuroscientist and tenured professor at Stanford University School of Medicine. He hosts the popular Huberman Lab podcast, focusing on neuroscience and science-based tools for everyday life.",
+        "qFollowers": 6100000,
+        "yearlyRevenue": 5000000,
+        "claims": [
+          {
+            "id": "39b5477c-1d6e-4433-a098-53a16cc6212c",
+            "text": "Cheating in relationships can have negative impacts on mental and physical health.",
+            "trustScore": 80,
+            "status": "Verified",
+            "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5709195/",
+            "category": "Mental Health",
+            "url": "https://www.youtube.com/watch?v=A-iYi2d4LSs",
+            "date": "27-03-2024"
+          },
+          {
+            "id": "31477896-81e6-4300-ac66-3149ef1bd36a",
+            "text": "Marijuana use can affect brain function and body processes.",
+            "trustScore": 85,
+            "status": "Verified",
+            "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3930618/",
+            "category": "Neuroscience",
+            "url": "https://www.youtube.com/watch?v=A-iYi2d4LSs",
+            "date": "10-05-2024"
+          },
+          {
+            "id": "c371fbc3-13d8-41d9-afa7-68c83a596774",
+            "text": "Defining relationships clearly is important for emotional well-being.",
+            "trustScore": 70,
+            "status": "Verified",
+            "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6128439/",
+            "category": "Psychology",
+            "url": "https://www.youtube.com/watch?v=A-iYi2d4LSs",
+            "date": "10-05-2024"
+          },
+          {
+            "id": "63432e62-b43c-4515-8c8b-9487beabffde",
+            "text": "Human behavior and decision-making are complex and influenced by various factors.",
+            "trustScore": 90,
+            "status": "Verified",
+            "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2864000/",
+            "category": "Behavioral Science",
+            "url": "https://unfilteredonline.com/huberman-on-trial-examining-the-evidence/",
+            "date": "15-04-2024"
+          },
+          {
+            "id": "34526d2a-c43f-462f-9c27-8611d3f0508c",
+            "text": "Scientific research should be critically examined and not overgeneralized.",
+            "trustScore": 95,
+            "status": "Verified",
+            "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1182327/",
+            "category": "Scientific Method",
+            "url": "https://unfilteredonline.com/huberman-on-trial-examining-the-evidence/",
+            "date": "15-04-2024"
+          }
+        ]
+      })
     const [categories, setCategories] = useState<Category[]>([])
-    const [filteredClaims, setFilteredClaims] = useState<Claim[]>([]);
+    const [filteredClaims, setFilteredClaims] = useState<Claim[]>([
+        {
+          id: "39b5477c-1d6e-4433-a098-53a16cc6212c",
+          text: "Cheating in relationships can have negative impacts on mental and physical health.",
+          trustScore: 80,
+          status: "Verified",
+          verifyLinkReference: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5709195/",
+          category: "Mental Health",
+          url: "https://www.youtube.com/watch?v=A-iYi2d4LSs",
+          date: "27-03-2024"
+        },
+        {
+          "id": "31477896-81e6-4300-ac66-3149ef1bd36a",
+          "text": "Marijuana use can affect brain function and body processes.",
+          "trustScore": 85,
+          "status": "Verified",
+          "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3930618/",
+          "category": "Neuroscience",
+          "url": "https://www.youtube.com/watch?v=A-iYi2d4LSs",
+          "date": "10-05-2024"
+        },
+        {
+          "id": "c371fbc3-13d8-41d9-afa7-68c83a596774",
+          "text": "Defining relationships clearly is important for emotional well-being.",
+          "trustScore": 70,
+          "status": "Verified",
+          "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6128439/",
+          "category": "Psychology",
+          "url": "https://www.youtube.com/watch?v=A-iYi2d4LSs",
+          "date": "10-05-2024"
+        },
+        {
+          "id": "63432e62-b43c-4515-8c8b-9487beabffde",
+          "text": "Human behavior and decision-making are complex and influenced by various factors.",
+          "trustScore": 90,
+          "status": "Verified",
+          "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2864000/",
+          "category": "Behavioral Science",
+          "url": "https://unfilteredonline.com/huberman-on-trial-examining-the-evidence/",
+          "date": "15-04-2024"
+        },
+        {
+          "id": "34526d2a-c43f-462f-9c27-8611d3f0508c",
+          "text": "Scientific research should be critically examined and not overgeneralized.",
+          "trustScore": 95,
+          "status": "Verified",
+          "verifyLinkReference": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1182327/",
+          "category": "Scientific Method",
+          "url": "https://unfilteredonline.com/huberman-on-trial-examining-the-evidence/",
+          "date": "15-04-2024"
+        }
+      ]);
     const [age, setAge] = useState('');
     const [selectedStatuses, setSelectedStatuses] = useState<Status[]>([
         {
@@ -215,12 +324,12 @@ const ClaimsTab = () => {
             <Box>
                 <Typography sx={{opacity: '0.6', fontSize: '17px'}} mb={2}>Showing {influencerData?.claims.length} claims</Typography>
                 {
-                    filteredClaims && filteredClaims.length > 0 ? (
-                        filteredClaims.map((ele, key) => (
+                    // filteredClaims && filteredClaims.length > 0 ? (
+                        influencerData.claims.map((ele, key) => (
                                 <ClaimDetail key={key} claim={ele} />
                             )
                         )
-                    ) : 'Loading'
+                    // ) : 'Loading'
                 }
 
                 {
@@ -228,7 +337,7 @@ const ClaimsTab = () => {
                 }
 
 
-                {JSON.stringify(influencerData?.claims)}
+                {/* {JSON.stringify(influencerData?.claims)} */}
                 
             </Box>
         </Box>
