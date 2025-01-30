@@ -73,7 +73,7 @@ const ClaimDetail = ({ claim }: ClaimDetailProps) => {
 
             <Box mt={-2} mb={4}>
                 <Box  mb={2}>
-                    <Typography mb={1} sx={{fontWeight: 'bold', fontSize: '18px'}} >{claim.text}</Typography>
+                    <Typography mb={1} sx={{fontWeight: 'bold', fontSize: '18px', maxWidth: '80%'}} >{claim.text}</Typography>
                     <Link to='/' target="_blank">
                         <Link to={claim.url} target={'_blank'}>
                             <Box sx={{display: 'flex', alignItems: 'center'}}>

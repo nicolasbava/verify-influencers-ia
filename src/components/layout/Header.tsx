@@ -138,7 +138,6 @@ export default function DrawerAppBar(props: Props) {
                     <Button onClick={designateAPIKey}  sx={{mt:2 }} variant='contained'>Add API Key</Button>
                 </Box>
             </Modal>
-            {apiKey}
           </Box>
         </Toolbar>
       </AppBar>

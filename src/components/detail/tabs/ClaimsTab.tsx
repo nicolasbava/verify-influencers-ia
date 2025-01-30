@@ -12,8 +12,8 @@ const ButtonGreen = styled(Button)<{active: boolean}>(({active}) => ({
     padding: '4px 12px',
     textTransform: 'capitalize',
     borderRadius: '25px',
-    backgroundColor: active ? theme.palette.secondary.light : theme.palette.primary.dark,
-    border: active ? `1px solid #0ea06f` :`1px solid grey`,
+    backgroundColor: active ? theme.palette.secondary.light : '#279671',
+    border: active ? `1px solid #096e4d` :`1px solid grey`,
 }));
 
 const ButtonGreenSquared = styled(Button)<{active: boolean}>(({theme, active}) => ({
@@ -158,7 +158,8 @@ const ClaimsTab = () => {
         });
 
         setFilteredClaims(sortedClaims);
-    }, [filterBy, isDescending, filteredClaims]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filterBy, isDescending]);
 
 
 
@@ -214,7 +215,6 @@ const ClaimsTab = () => {
                                 <FormControl sx={{background: 'primary.dark'}} size={'small'} fullWidth
                                      
                                 >
-                                    {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
                                     <Select
                                         labelId="demo-simple-select-label"
                                         id="demo-simple-select"
