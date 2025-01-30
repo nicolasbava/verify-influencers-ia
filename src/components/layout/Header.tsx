@@ -14,7 +14,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
-
+import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
 interface Props {
   /**
    * Injected by the documentation to work in an iframe.
@@ -69,17 +69,18 @@ export default function DrawerAppBar(props: Props) {
           >
             <MenuIcon />
           </IconButton>
+          <ShieldOutlinedIcon sx={{mr: 1, fontSize: '33px'}} />
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' }, fontSize: '20px' }}
           >
             VerifyInfluencers
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {navItems.map((item, key) => (
-              <Link key={key + item} to={`/${item}`}>
-                <Button key={item} sx={{ color: '#fff' }}>
+              <Link key={key + item} to={`/${item.toLowerCase()}`}>
+                <Button key={item} sx={{ color: '#fff', textTransform: 'capitalize', fontSize: '16px' }}>
                     {item}
                 </Button>
               </Link>

@@ -12,6 +12,7 @@ export interface Influencer {
     trend: string;
     followers: string;
     verifiedClaims: number;
+    id: string
 }
 
 // Example usage
@@ -91,7 +92,8 @@ const LeaderBoardComponent = () => {
           const pageSize = 10;
           const { data, lastVisible }  = await fetchPagedData(pageSize, lastDoc);
           console.log('data: ', data)
-          setLeaderBoardData(data); // Update the state with the fetched data
+          const parsedData : Influencer[] = data
+          setLeaderBoardData(parsedData); // Update the state with the fetched data
           setLastDoc(lastVisible); // Update the last document for pagination
         } catch (error) {
           console.error("Error fetching leaderboard data: ", error);
@@ -99,7 +101,9 @@ const LeaderBoardComponent = () => {
       };
   
       fetchData(); // Call the async function
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
     return (
         <Box mb={2}>
             <Typography mb={1} sx={{fontWeight: 'bold', fontSize: '39px'}}>Influencer Trust Leaderboard</Typography>

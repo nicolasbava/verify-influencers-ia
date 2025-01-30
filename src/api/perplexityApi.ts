@@ -252,30 +252,30 @@ export const fetchDataFromIA = async (
   }
 };
 
-const responseNew = {
-  "img": "https://example.com/andrew_huberman.jpg",
-  "name": "Andrew Huberman",
-  "biography": "Andrew Huberman is a Stanford University neuroscientist and popular podcaster known for his work on neuroscience and human performance. He hosts the Huberman Lab podcast, discussing scientific research on various health topics.",
-  "claims": [
-    {
-      "text": "Fasting will increase testosterone levels",
-      "date": "27-03-2024",
-      "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
-    },
-    {
-      "text": "Extended fasting will increase growth hormone levels",
-      "date": "27-03-2024",
-      "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
-    },
-    {
-      "text": "Exercising as if being chased with a syringe full of poison can enhance performance",
-      "date": "27-03-2024",
-      "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
-    }
-  ],
-  "qFollowers": 6100000,
-  "category": "Neuroscientist"
-}
+// const responseNew = {
+//   "img": "https://example.com/andrew_huberman.jpg",
+//   "name": "Andrew Huberman",
+//   "biography": "Andrew Huberman is a Stanford University neuroscientist and popular podcaster known for his work on neuroscience and human performance. He hosts the Huberman Lab podcast, discussing scientific research on various health topics.",
+//   "claims": [
+//     {
+//       "text": "Fasting will increase testosterone levels",
+//       "date": "27-03-2024",
+//       "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
+//     },
+//     {
+//       "text": "Extended fasting will increase growth hormone levels",
+//       "date": "27-03-2024",
+//       "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
+//     },
+//     {
+//       "text": "Exercising as if being chased with a syringe full of poison can enhance performance",
+//       "date": "27-03-2024",
+//       "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
+//     }
+//   ],
+//   "qFollowers": 6100000,
+//   "category": "Neuroscientist"
+// }
 
 export const executeResearchAndVerify = async (messages: Message[], journals: Journal[], verifyClaims: boolean) => {
   try {

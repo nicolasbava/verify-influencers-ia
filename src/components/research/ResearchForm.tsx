@@ -89,15 +89,6 @@ const ResearchForm = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [userInput, setUserInput] = useState<string>("");
     const [newJournal, setNewJournal] = useState<string>("");
-    // const [responses, setResponses] = useState([]);
-    // const [qProducts, setQProducts] = useState<number>(15);
-    // const [notesSearch, setNotesSearch] = useState<string>('')
-    const [ setMessages] = useState([
-        {
-            role: "system",
-            content: "",
-        },
-    ]); 
     const [newResearch, setNewResearch] = useState<boolean>(false);
     const [includeRevenueAnalysis, setIncludeRevenueAnalysis] = useState<boolean>(true);
     const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.LAST_WEEK);
@@ -401,13 +392,12 @@ const ResearchForm = () => {
                 </Box>
 
                 <Box sx={{display: 'flex', justifyContent: 'flex-end'}}>
-                    <Button type="submit" sx={{color: 'white', textTransform: 'capitalize', marginLeft: 'auto', background: 'secondary.light'}} variant="contained">
+                    <Button type="submit" sx={{color: 'white', textTransform: 'capitalize', marginLeft: 'auto', background: '#1b6d5c'}} variant="contained">
                         { loading ? 'Loading' : '+ Start Research' }
                     </Button>
                 </Box>
             </Box>
 
-            {/* {JSON.stringify(messages)} */}
         </form>
     )
 }

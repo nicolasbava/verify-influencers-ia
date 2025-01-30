@@ -8,10 +8,10 @@ import theme from "./theme.ts";
 import { ResearchProvider } from './context/GlobalContext.tsx';
 import { BrowserRouter } from 'react-router-dom';
 
-// TODO put links of claim research and date of claim publish and profile picture -> save picture to bdd READY
-// TODO add filters to detail page
-// TODO revisar que elimine los duplicados de claims que tienen el mismo significado (? 
 // TODO add input to allow client put his own api key
+// TODO put links of claim research and date of claim publish and profile picture -> save picture to bdd READY
+// TODO add filters to detail page READY
+// TODO revisar que elimine los duplicados de claims que tienen el mismo significado (? READY
 // TODO add categories to the health influencer for detail page _!READY
 // TODO add total claims verified for info boxes _!READY
 // TODO color to percentage temperature _!READY
