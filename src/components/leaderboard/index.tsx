@@ -12,7 +12,7 @@ export interface Influencer {
     trend: string;
     followers: string;
     verifiedClaims: number;
-    id: string
+    // id: string
 }
 
 // Example usage
@@ -92,21 +92,7 @@ const LeaderBoardComponent = () => {
           const pageSize = 10;
           const { data }  = await fetchPagedData(pageSize, lastDoc);
           console.log('data: ', data)
-        //   const parsedData : Influencer[] = data
-            setLeaderBoardData(
-                data.map((item) => ({
-                    id: item.id,
-                    rank: 0, // Default rank
-                    name: 'Unknown', // Default name
-                    category: 'Unknown', // Default category
-                    trustScore: '0', // Default trust score
-                    trend: 'Stable', // Default trend
-                    followers: '0', // Default followers
-                    verifiedClaims: 0, // Default verified claims
-                }))
-            );
-        //   setLeaderBoardData(parsedData); // Update the state with the fetched data
-        //   setLastDoc(lastVisible); // Update the last document for pagination
+          setLeaderBoardData(data as Influencer[]);
         } catch (error) {
           console.error("Error fetching leaderboard data: ", error);
         }

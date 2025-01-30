@@ -13,6 +13,8 @@ interface ResearchContextType {
     setTimeRange: (value: TimeRange) => void;
     researchResponse: HealthInfluencerVerified | null;
     setResearchResponse: (value: HealthInfluencerVerified) => void;
+    apiKey: string;
+    setAPIKey: (value: string) => void;
 }
 
 // Define el tipo para el TimeRange (si no lo tienes ya)
@@ -48,6 +50,7 @@ export const ResearchProvider = ({ children }: { children: ReactNode }) => {
     const [includeRevenueAnalysis, setIncludeRevenueAnalysis] = useState(true);
     const [timeRange, setTimeRange] = useState<TimeRange>(TimeRange.LAST_WEEK);
     const [researchResponse, setResearchResponse] = useState<HealthInfluencerVerified | null>(null)
+    const [apiKey, setAPIKey] = useState<string>('')
 
     return (
         <ResearchContext.Provider
@@ -61,7 +64,9 @@ export const ResearchProvider = ({ children }: { children: ReactNode }) => {
                 timeRange,
                 setTimeRange,
                 researchResponse,
-                setResearchResponse
+                setResearchResponse,
+                apiKey,
+                setAPIKey,
             }}
         >
             {children}

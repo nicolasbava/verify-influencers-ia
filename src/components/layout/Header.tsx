@@ -15,6 +15,9 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import { Modal } from '@mui/material';
+import { CustomTextField } from '../styled';
+import { useResearchContext } from '../../context/GlobalContext';
 interface Props {
   /**
    * Injected by the documentation to work in an iframe.
@@ -24,16 +27,35 @@ interface Props {
   children?: React.ReactNode;
 }
 
+
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        color: 'white',
+        bgcolor: 'primary.light',
+        border: '1px solid grey',
+        borderRadius: '15px',
+        boxShadow: 24,
+        p: 4,
+    };
+
 const drawerWidth = 240;
 const navItems = ['Leaderboard', 'Research'];
 
 export default function DrawerAppBar(props: Props) {
   const { window, children } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
+  const [open, setOpen] = React.useState<boolean>(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
+  const [apiKey, setApiKey] = React.useState<string>('')
+  const {setAPIKey} = useResearchContext()
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', }}>
@@ -54,6 +76,17 @@ export default function DrawerAppBar(props: Props) {
   );
 
   const container = window !== undefined ? () => window().document.body : undefined;
+
+  const designateAPIKey = () => {
+    if (!apiKey.trim()) {
+      alert("Please enter a valid API key.");
+      return;
+    }
+  
+    setAPIKey(apiKey); // Update context with API key
+    setApiKey(""); // Clear input after submission
+    handleClose(); // Close modal
+  };
 
   return (
     <Box sx={{ display: 'flex',  }}>
@@ -85,6 +118,27 @@ export default function DrawerAppBar(props: Props) {
                 </Button>
               </Link>
             ))}
+            <Button onClick={  handleOpen} sx={{ color: '#fff', textTransform: 'capitalize', fontSize: '16px' }}>
+                    API Key
+            </Button>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                >
+                <Box sx={style}>
+                    <Box sx={{display:'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2}}>
+                        <Typography  id="modal-modal-title" variant="h6" component="h2" >
+                            Add Your Perplexity API Key
+                        </Typography>
+                        <Typography sx={{fontWeight: 'bold', cursor: 'pointer'}} onClick={handleClose}>X</Typography>
+                    </Box>
+                    <CustomTextField onChange={(e) => setApiKey(e.target.value)} value={apiKey}  size={'small'} fullWidth  id="outlined-basic" placeholder="API Key" variant="outlined" /><br/>
+                    <Button onClick={designateAPIKey}  sx={{mt:2 }} variant='contained'>Add API Key</Button>
+                </Box>
+            </Modal>
+            {apiKey}
           </Box>
         </Toolbar>
       </AppBar>

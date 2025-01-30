@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { collection, getDocs, getFirestore, limit, orderBy, query, startAfter } from "firebase/firestore";
-import { HealthInfluencerVerified } from "../interfaces/Research";
+import { Influencer } from "../components/leaderboard";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_API_KEY_FIREBASE,
@@ -15,7 +15,7 @@ const firebaseConfig = {
 
 
 // This function will fetch data with pagination
-export const fetchPagedData = async (pageSize: number, lastDoc: HealthInfluencerVerified | null = null) => {
+export const fetchPagedData = async (pageSize: number, lastDoc: Influencer | null = null) => {
     try {
       const influencersRef = collection(db, "health-influencers");
       let q = query(influencersRef, orderBy("name"), limit(pageSize));

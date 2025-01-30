@@ -99,7 +99,8 @@ const ResearchForm = () => {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const { setResearchResponse } = useResearchContext();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const {apiKey} = useResearchContext()
     
     const [journals, setJournals] = useState([
         {name: 'PubMed Central', selected: true}, 
@@ -145,10 +146,8 @@ const ResearchForm = () => {
         // setMessages(payload);
         setLoading(true);
 
-        console.log('payload', payload)
-
         try {
-            const result = await executeResearchAndVerify(payload, journals, verifyClaims);
+            const result = await executeResearchAndVerify(payload, journals, verifyClaims, apiKey);
             // setResponses((prev) => [...prev, result.choices[0].message.content]);
             // setMessages((prev) => [
             //     ...prev,
@@ -156,15 +155,11 @@ const ResearchForm = () => {
             // ]);
             if(!result) throw new Error('problem with research result')
                 
-            console.log('====================================');
-            console.log('PASE DESPUES DE EXECUTE AND VERIFY');
-            console.log('====================================');    
             const calculateTotalResults : HealthInfluencerVerified = {
                 ...result,
                 totalTrustPercentage: calculateTotalTrustScore(result.claims),
                 categories: getUniqueCategories(result.claims)
             }
-            console.log('calculateTotalResults', calculateTotalResults);
             setResearchResponse(calculateTotalResults)
         } catch (error) {
             console.error("Error:", error);
@@ -348,7 +343,9 @@ const ResearchForm = () => {
                         ))}
                     
                     </Grid2>
-                    <Button  onClick={handleOpen} sx={{color: 'secondary.light', textTransform: 'capitalize'}}>+ Add New Journal</Button>
+                    <Button  onClick={handleOpen} sx={{color: 'secondary.light', textTransform: 'capitalize'}}>
+                        + Add New Journal
+                    </Button>
 
                     <Modal
                         open={open}

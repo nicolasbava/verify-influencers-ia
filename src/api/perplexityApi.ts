@@ -55,11 +55,10 @@ const saveInfo = async (data: HealthInfluencerVerified) => {
   }
 };
 
-// Promise<HealthInfluencerVerified>
 const verifyClaimsWithJournals = async (
   research: HealthInfluencerVerified,
   journals: Journal[],
-// ) : Promise<ChatCompletionResponse>  => {
+  apiKey: string
 )  => {
   try {
 
@@ -166,23 +165,14 @@ const verifyClaimsWithJournals = async (
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_API_KEY_IA}`,
+          Authorization: `Bearer ${import.meta.env.VITE_API_KEY_IA ?? apiKey} `,
         },
       }
     );
 
-    // const response = { data: {}}
-
-    // Validate the response is valid JSON before storing it
     if (!response.data || typeof response.data !== "object") {
       throw new Error("Invalid response format: Expected a JSON object.");
     }
-    const parsedData = JSON.parse(response.data.choices[0].message.content)
-    console.log(">>> Messages sent:", messages);
-    // console.log("Response received:", response.data);
-    console.log('>>> parsedData', parsedData)
-    console.log('>>> response', response)
-    // return messages
     return response;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
@@ -197,7 +187,8 @@ const verifyClaimsWithJournals = async (
 
 
 export const fetchDataFromIA = async (
-  messages: Message[]
+  messages: Message[], 
+  apiKey: string
 ): Promise<HealthInfluencerVerified> => {
   try {
     const response = await axios.post<ChatCompletionResponse>(
@@ -210,7 +201,7 @@ export const fetchDataFromIA = async (
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_API_KEY_IA}`,
+          Authorization: `Bearer ${import.meta.env.VITE_API_KEY_IA ?? apiKey}`,
         },
       }
     );
@@ -277,9 +268,9 @@ export const fetchDataFromIA = async (
 //   "category": "Neuroscientist"
 // }
 
-export const executeResearchAndVerify = async (messages: Message[], journals: Journal[], verifyClaims: boolean) => {
+export const executeResearchAndVerify = async (messages: Message[], journals: Journal[], verifyClaims: boolean, apiKey: string) => {
   try {
-    const researchFromIA = await fetchDataFromIA(messages);
+    const researchFromIA = await fetchDataFromIA(messages, apiKey);
     if (!researchFromIA) throw new Error("Research data is undefined or invalid.");
 
     if(verifyClaims === false){
@@ -288,7 +279,7 @@ export const executeResearchAndVerify = async (messages: Message[], journals: Jo
     }
     
     try{
-      const verifyResearch = await verifyClaimsWithJournals(researchFromIA, journals);
+      const verifyResearch = await verifyClaimsWithJournals(researchFromIA, journals, apiKey);
       const parsedResponse : HealthInfluencerVerified = JSON.parse(verifyResearch.data.choices[0].message.content)
       await saveInfo(parsedResponse);
       return parsedResponse
