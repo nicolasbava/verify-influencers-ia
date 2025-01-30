@@ -1,12 +1,12 @@
 import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
-import { ChatCompletionResponse, HealthInfluencer, HealthInfluencerVerified, Journal, Message } from "../interfaces/Research";
+import { ChatCompletionResponse,  HealthInfluencerVerified, Journal, Message } from "../interfaces/Research";
 import axios from "axios";
 import { calculateTotalTrustScore, getUniqueCategories } from "../utils";
 
 const generateId = () => crypto.randomUUID();
 
-const transformClaims = (data : HealthInfluencer) : HealthInfluencerVerified => {
+const transformClaims = (data : HealthInfluencerVerified) : HealthInfluencerVerified => {
   return {
     ...data,
     claims: data.claims.map((claim) => ({
