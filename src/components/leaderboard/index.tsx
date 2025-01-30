@@ -84,17 +84,29 @@ export interface Influencer {
 
 const LeaderBoardComponent = () => {
     const [leaderBoardData, setLeaderBoardData] = useState<Influencer[]>([]);
-    const [lastDoc, setLastDoc] = useState(null);
+    const [lastDoc] = useState(null);
   
     useEffect(() => {
       const fetchData = async () => {
         try {
           const pageSize = 10;
-          const { data, lastVisible }  = await fetchPagedData(pageSize, lastDoc);
+          const { data }  = await fetchPagedData(pageSize, lastDoc);
           console.log('data: ', data)
-          const parsedData : Influencer[] = data
-          setLeaderBoardData(parsedData); // Update the state with the fetched data
-          setLastDoc(lastVisible); // Update the last document for pagination
+        //   const parsedData : Influencer[] = data
+            setLeaderBoardData(
+                data.map((item) => ({
+                    id: item.id,
+                    rank: 0, // Default rank
+                    name: 'Unknown', // Default name
+                    category: 'Unknown', // Default category
+                    trustScore: '0', // Default trust score
+                    trend: 'Stable', // Default trend
+                    followers: '0', // Default followers
+                    verifiedClaims: 0, // Default verified claims
+                }))
+            );
+        //   setLeaderBoardData(parsedData); // Update the state with the fetched data
+        //   setLastDoc(lastVisible); // Update the last document for pagination
         } catch (error) {
           console.error("Error fetching leaderboard data: ", error);
         }
