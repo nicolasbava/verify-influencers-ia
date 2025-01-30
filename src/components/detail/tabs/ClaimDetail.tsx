@@ -86,7 +86,7 @@ const ClaimDetail = ({ claim }: ClaimDetailProps) => {
                 <Box ml={4} mb={4}>
                     <Box sx={{display: 'flex', alignItems: 'center', gap: 1, mb: 1}}>
                         <ImgIcon
-                            src="src/assets/brain.png"
+                            src="assets/brain.png"
                             alt="Example"
                             loading="lazy"
                         />

@@ -22,33 +22,20 @@ const transformClaims = (data : HealthInfluencerVerified) : HealthInfluencerVeri
   };
 };
 
-// const saveInfo = async (data: HealthInfluencerVerified) => {
-//   console.log('data to save', data)
-//   // TODO find if dr name is not already saved to avoid saving duplicates
-//   try {
-//     const docRef = await addDoc(collection(db, "health-influencers"), data);
-//     console.log("Data saved with ID: ", docRef.id);
-//   } catch (e) {
-//     console.error("Error saving tweet: ", e);
-//   }
-// };
-
 
 const saveInfo = async (data: HealthInfluencerVerified) => {
   console.log("Data to save", data);
 
   try {
-    // Verificar si ya existe un influencer con el mismo nombre
     const influencersRef = collection(db, "health-influencers");
     const q = query(influencersRef, where("name", "==", data.name));
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
       console.warn("This influencer is already saved:", data.name);
-      return; // Evita guardar duplicados
+      return;
     }
 
-    // Guardar solo si el nombre no está duplicado
     const docRef = await addDoc(influencersRef, data);
     console.log("Data saved with ID: ", docRef.id);
   } catch (e) {
@@ -163,7 +150,7 @@ const verifyClaimsWithJournals = async (
       {
         model: "sonar-pro",
         messages,
-        format: "json", // Ensures AI responds with pure JSON
+        format: "json", 
       },
       {
         headers: {
@@ -210,32 +197,9 @@ export const fetchDataFromIA = async (
       }
     );
 
-    // const response : { data: HealthInfluencer } = {
-    //   data: { 
-    //     id: generateId(), 
-    //     name: "Dr. Rhonda Patrick", 
-    //     biography: "Dr. Rhonda Patrick is a scientist and health educator with a Ph.D. in Biomedical Science. She is the founder of FoundMyFitness, where she shares evidence-based insights on nutrition, aging, and disease prevention. Dr. Patrick conducts research on micronutrients, metabolism, and longevity, and is an associate scientist at the Fatty Acid Research Institute.",  claims: [
-    //       "Fasting will increase testosterone levels",
-    //       "Longer fasting will increase growth hormone levels",
-    //       "Exercise intensity as if being chased with a syringe of poison can boost performance",
-    //       "Viewing sunlight within 30-60 minutes of waking enhances cortisol release"
-    //     ],
-    //     qFollowers: 6100000,
-    //     yearlyRevenue: 5000000
-    //   }
-    // }
-    console.log('<< response', response.data.choices[0].message.content)
-    console.log('<< response DATA', JSON.parse(response.data.choices[0].message.content))
-
-
     const transformedClaims = transformClaims(JSON.parse(response.data.choices[0].message.content))
 
-    console.log('<< messages', messages)
-    console.log('<< transformedClaims', transformedClaims)
-
-    // console.log('response:', response.data)
     return transformedClaims;
-    // return response.data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
         console.error("Error fetching chat completion:", error.response || error.message);
@@ -247,30 +211,6 @@ export const fetchDataFromIA = async (
   }
 };
 
-// const responseNew = {
-//   "img": "https://example.com/andrew_huberman.jpg",
-//   "name": "Andrew Huberman",
-//   "biography": "Andrew Huberman is a Stanford University neuroscientist and popular podcaster known for his work on neuroscience and human performance. He hosts the Huberman Lab podcast, discussing scientific research on various health topics.",
-//   "claims": [
-//     {
-//       "text": "Fasting will increase testosterone levels",
-//       "date": "27-03-2024",
-//       "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
-//     },
-//     {
-//       "text": "Extended fasting will increase growth hormone levels",
-//       "date": "27-03-2024",
-//       "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
-//     },
-//     {
-//       "text": "Exercising as if being chased with a syringe full of poison can enhance performance",
-//       "date": "27-03-2024",
-//       "url": "https://www.hindustantimes.com/trending/andrew-huberman-10-allegations-on-podcasters-darker-side-in-explosive-report-101711475160039.html"
-//     }
-//   ],
-//   "qFollowers": 6100000,
-//   "category": "Neuroscientist"
-// }
 
 export const executeResearchAndVerify = async (messages: Message[], journals: Journal[], verifyClaims: boolean, apiKey: string) => {
   try {
